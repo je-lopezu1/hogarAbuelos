@@ -24,9 +24,21 @@ def create_medication_view(request):
 
     return render(request, 'create_medication.html', {'form': form})
 
-def delete_medication_view(request, id):
+def delete_medication_view(request, pk):
     if request.method == 'POST':
         medication = get_object_or_404(Medication, pk=pk)
         medication.delete()
         return redirect('medications:medications_view')
     return HttpResponse(status=405)
+
+def update_medication_view(request, pk):
+    medication = get_object_or_404(Medication, pk=pk)
+    if request.method == 'POST':
+        form = MedicationForm(request.POST, instance=medication)
+        if form.is_valid():
+            form.save()
+            return redirect('medications:medications_view')
+    else:
+        form = MedicationForm(instance=medication)
+
+    return render(request, 'update_medication.html', {'form': form})

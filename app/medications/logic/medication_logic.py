@@ -9,3 +9,7 @@ def create_medication(medication_data):
 def delete_medication(medication_id):
     Medication.objects.get(id=medication_id).delete()
 
+def update_medication(medication_id, medication_data):
+    medication = Medication.objects.get(id=medication_id)
+    medication.name = medication_data['name']
+    medication.save()

@@ -7,20 +7,27 @@
 </head>
 <body class="container mt-4">
     <h1>Lista de Medicamentos</h1>
-    
+
     <a href="{% url 'medications:create_medication_view' %}" class="btn btn-success mb-3">Añadir Nuevo Medicamento</a>
-    
+
     <ul class="list-group">
         {% for medication in medications %}
             <li class="list-group-item d-flex justify-content-between align-items-center">
                 {{ medication.name }}
-
-                <form action="{% url 'medications:delete_medication_view' medication.pk %}" method="POST" class="d-inline">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-danger btn-sm" title="Eliminar" onclick="return confirm('¿Estás seguro de que deseas eliminar este medicamento?');">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </form>
+                <div>
+                    <!-- Botón de Editar -->
+                    <a href="{% url 'medications:update_medication_view' medication.pk %}" class="btn btn-primary btn-sm me-2" title="Editar">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+                    
+                    <!-- Botón de Eliminar -->
+                    <form action="{% url 'medications:delete_medication_view' medication.pk %}" method="POST" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger btn-sm" title="Eliminar" onclick="return confirm('¿Estás seguro de que deseas eliminar este medicamento?');">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </form>
+                </div>
             </li>
         {% empty %}
             <li class="list-group-item">No hay medicamentos registrados.</li>
@@ -28,4 +35,3 @@
     </ul>
 </body>
 </html>
-
