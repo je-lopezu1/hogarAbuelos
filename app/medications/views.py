@@ -1,9 +1,10 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, redirect, render
+
+from .models import Medication
+from .forms import MedicationForm
 from medications.logic import medication_logic as ml
 from django.core import serializers
 from django.http import HttpResponse
-from django.views.decorators.csrf import csrf_exempt
-import json
 
 # Create your views here.
 def medications_view(request):
@@ -11,10 +12,21 @@ def medications_view(request):
         medications = ml.get_all_medications()
         return render(request, 'list_medications.html', {'medications': medications})
 
-@csrf_exempt
 def create_medication_view(request):
     if request.method == 'POST':
-        data = json.loads(request.body)
-        nombre = data.get('name')
-        ml.create_medication({'name': nombre})
-        return HttpResponse('Medication created', status=201)
+        form = MedicationForm(request.POST)
+        if form.is_valid():
+            nombre = form.cleaned_data['name']
+            ml.create_medication({'name': nombre})
+            return redirect('medications:medications_view')
+    else:
+        form = MedicationForm()
+
+    return render(request, 'create_medication.html', {'form': form})
+
+def delete_medication_view(request, id):
+    if request.method == 'POST':
+        medication = get_object_or_404(Medication, pk=pk)
+        medication.delete()
+        return redirect('medications:medications_view')
+    return HttpResponse(status=405)
