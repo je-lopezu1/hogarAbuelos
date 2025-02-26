@@ -14,7 +14,7 @@
             <a href="{% url 'residents:residents_view' %}" class="btn btn-outline-secondary">
                 ⬅ Volver a la lista de residentes
             </a>
-            <a href="{% url 'medication_dose:create_dose_view' %}" class="btn btn-primary">➕ Agregar Dosis</a>
+            <a href="{% url 'medication_dose:create_medication_dose_view' resident.pk %}" class="btn btn-primary">➕ Agregar Dosis</a>
         </div>
         
         <div class="card shadow-sm p-4">

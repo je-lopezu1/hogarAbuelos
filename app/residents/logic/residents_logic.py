@@ -1,3 +1,4 @@
+from medication_dose.models import MedicationDose
 from ..models import Resident
 
 def get_all_residents():
@@ -21,4 +22,8 @@ def update_resident(resident_id, resident_data):
     resident.medical_condition = resident_data['medical_condition']
     resident.medications.set(resident_data['medications'])
     resident.save()
+
+def get_all_resident_medication_doses(resident):
+    doses = MedicationDose.objects.filter(resident=resident)
+    return doses
     

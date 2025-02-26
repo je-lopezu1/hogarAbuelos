@@ -6,4 +6,5 @@ app_name = 'medication_dose'
 
 urlpatterns = [
     path('<int:resident_pk>/doses/', views.resident_doses_view, name='resident_doses_view'),
+    path('<int:resident_pk>/doses/create/', views.create_medication_dose_view, name='create_medication_dose_view'),
 ]

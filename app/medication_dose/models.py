@@ -9,8 +9,9 @@ class MedicationDose(models.Model):
     resident = models.ForeignKey(
         Resident, 
         on_delete=models.CASCADE,  # Si se borra el residente, se borran sus dosis
-        related_name='medication_doses'
-    ),
+        related_name='medication_doses',
+        default=7
+    )
     
     medication = models.ForeignKey(
         Medication, 
