@@ -42,3 +42,7 @@ def update_resident_view(request, pk):
         form = ResidentForm(instance=resident)
     
     return render(request, 'update_resident.html', {'form': form})
+
+def resident_doses_view(request, resident_pk):
+    resident = get_object_or_404(Resident, pk=resident_pk)
+    return render(request, 'list_doses.html', {'resident': resident})

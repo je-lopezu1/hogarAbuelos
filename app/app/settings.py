@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'residents',
     'medications',
+    'medication_dose',
 ]
 
 MIDDLEWARE = [
