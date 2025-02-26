@@ -31,4 +31,7 @@ def create_medication_dose(medication_dose_data):
 
     return medication_dose
 
+def delete_medication_dose(medication_dose_id):
+    MedicationDose.objects.get(id=medication_dose_id).delete()
+
 

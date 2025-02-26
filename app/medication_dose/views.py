@@ -34,3 +34,9 @@ def create_medication_dose_view(request, resident_pk):
         form = MedicationDoseForm(resident=resident)
 
     return render(request, 'create_dose.html', {'resident': resident, 'form': form})
+
+def delete_medication_dose_view(request, resident_pk, dose_pk):
+    if request.method == 'POST':
+        mdl.delete_medication_dose(dose_pk)
+        return redirect('residents:resident_doses_view', resident_pk=resident_pk)
+    return HttpResponse(status=405)
