@@ -1,0 +1,69 @@
+# Python bytecode files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*/__pycache__/
+**/__pycache__/
+apps/*/__pycache__/
+apps/*/*/__pycache__/
+models/__pycache__/
+models/*/__pycache__/
+# Django
+*.log
+*.pot
+*.pyc
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Virtual environments
+venv/
+env/
+ENV/
+.env
+.venv
+env/
+env.bak/
+venv.bak/
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Testing
+.coverage
+htmlcov/
+.tox/
+.nox/
+.pytest_cache/
+nosetests.xml
+coverage.xml
+*.cover
+
+# Unit test / coverage reports
+.coverage.*
+.cache/
+coverage/
+
+# Translations
+*.mo
+
+# Project specific
+logs/
+tmp/
+
+# Backup files
+*.bak
+*~

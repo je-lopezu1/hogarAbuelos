@@ -1,0 +1,366 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Portal Familiar - Hogar Gerontológico New Hope{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="dashboard-header d-flex justify-content-between align-items-center">
+        <h2 class="mb-0">
+            <i class="fas fa-home me-2"></i>Portal Familiar
+        </h2>
+        <span class="badge bg-light text-dark">Familiar</span>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="dashboard-card text-center">
+                <i class="fas fa-user-circle fa-5x text-primary mb-3"></i>
+                <h3>Ana María Gómez</h3>
+                <p class="text-muted mb-1">78 años</p>
+                <p class="mb-3">Habitación: 105</p>
+                <span class="badge bg-success py-2 px-3">Estado: Estable</span>
+            </div>
+        </div>
+        
+        <div class="col-md-8 mb-4">
+            <div class="dashboard-container">
+                <h3 class="mb-4">
+                    <i class="fas fa-heartbeat me-2 text-danger"></i>
+                    Resumen de Salud
+                </h3>
+                <div class="row">
+                    <div class="col-sm-6 col-md-3 mb-3 text-center">
+                        <div class="p-3 border rounded bg-light">
+                            <h4 class="h5 mb-1">Presión Arterial</h4>
+                            <p class="h3 text-primary mb-0">120/80</p>
+                            <small class="text-muted">Última medición: Hoy</small>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-3 mb-3 text-center">
+                        <div class="p-3 border rounded bg-light">
+                            <h4 class="h5 mb-1">Temperatura</h4>
+                            <p class="h3 text-primary mb-0">36.5°C</p>
+                            <small class="text-muted">Última medición: Hoy</small>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-3 mb-3 text-center">
+                        <div class="p-3 border rounded bg-light">
+                            <h4 class="h5 mb-1">Glucosa</h4>
+                            <p class="h3 text-primary mb-0">110 mg/dL</p>
+                            <small class="text-muted">Última medición: Ayer</small>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-3 mb-3 text-center">
+                        <div class="p-3 border rounded bg-light">
+                            <h4 class="h5 mb-1">Peso</h4>
+                            <p class="h3 text-primary mb-0">65 kg</p>
+                            <small class="text-muted">Última medición: 3 días</small>
+                        </div>
+                    </div>
+                </div>
+                
+                <h4 class="mt-4 mb-3">Medicación Actual</h4>
+                <div class="table-responsive mb-3">
+                    <table class="table table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Medicamento</th>
+                                <th>Dosis</th>
+                                <th>Frecuencia</th>
+                                <th>Horario</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Losartán</td>
+                                <td>50mg</td>
+                                <td>1 vez al día</td>
+                                <td>Mañana (9:00 AM)</td>
+                            </tr>
+                            <tr>
+                                <td>Aspirina</td>
+                                <td>100mg</td>
+                                <td>1 vez al día</td>
+                                <td>Mañana (9:00 AM)</td>
+                            </tr>
+                            <tr>
+                                <td>Vitamina D</td>
+                                <td>1000 UI</td>
+                                <td>1 vez al día</td>
+                                <td>Tarde (2:00 PM)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="text-end">
+                    <a href="#" class="btn btn-sm btn-outline-primary">Ver historial médico completo</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="dashboard-container">
+                <h3 class="mb-4">
+                    <i class="fas fa-calendar-alt me-2 text-success"></i>
+                    Actividades Recientes
+                </h3>
+                <div class="list-group">
+                    <div class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">Taller de Manualidades</h5>
+                            <small class="text-muted">Hoy, 10:30 AM</small>
+                        </div>
+                        <p class="mb-1">Ana participó activamente en el taller de manualidades creando una figura de arcilla.</p>
+                        <small class="text-success">
+                            <i class="fas fa-check-circle me-1"></i>Participación excelente
+                        </small>
+                    </div>
+                    <div class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">Ejercicios Matutinos</h5>
+                            <small class="text-muted">Hoy, 08:00 AM</small>
+                        </div>
+                        <p class="mb-1">Sesión de ejercicios suaves para mejorar la movilidad y el equilibrio.</p>
+                        <small class="text-success">
+                            <i class="fas fa-check-circle me-1"></i>Completó todos los ejercicios
+                        </small>
+                    </div>
+                    <div class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">Juegos de Mesa</h5>
+                            <small class="text-muted">Ayer, 3:00 PM</small>
+                        </div>
+                        <p class="mb-1">Participó en una sesión de juegos de mesa con otros residentes.</p>
+                        <small class="text-success">
+                            <i class="fas fa-check-circle me-1"></i>Disfrutó de la actividad
+                        </small>
+                    </div>
+                </div>
+                <div class="text-end mt-3">
+                    <a href="#" class="btn btn-sm btn-outline-primary">Ver todas las actividades</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="dashboard-container">
+                <h3 class="mb-4">
+                    <i class="fas fa-comment-alt me-2 text-info"></i>
+                    Notas del Personal
+                </h3>
+                <div class="list-group">
+                    <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">Dra. María Jiménez</h5>
+                            <small class="text-muted">Hoy, 11:45 AM</small>
+                        </div>
+                        <p class="mb-1">Se realizó control de presión arterial. Valores normales. Continúa con la misma medicación.</p>
+                        <small class="text-muted">Médico de guardia</small>
+                    </div>
+                    <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">Carlos Mendoza</h5>
+                            <small class="text-muted">Ayer, 4:30 PM</small>
+                        </div>
+                        <p class="mb-1">Ana estuvo muy animada durante la hora de la merienda. Compartió historias con sus compañeros de mesa.</p>
+                        <small class="text-muted">Enfermero</small>
+                    </div>
+                    <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">Laura Ramírez</h5>
+                            <small class="text-muted">Hace 2 días</small>
+                        </div>
+                        <p class="mb-1">Mostró gran interés y participación en la sesión de musicoterapia. Se recomienda continuar con estas actividades.</p>
+                        <small class="text-muted">Terapeuta ocupacional</small>
+                    </div>
+                </div>
+                <div class="text-end mt-3">
+                    <a href="#" class="btn btn-sm btn-outline-primary">Ver todas las notas</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8 mb-4">
+            <div class="dashboard-container">
+                <h3 class="mb-4">
+                    <i class="fas fa-calendar-week me-2 text-primary"></i>
+                    Próximas Actividades
+                </h3>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Hora</th>
+                                <th>Actividad</th>
+                                <th>Lugar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>28/02/2025</td>
+                                <td>10:00 AM</td>
+                                <td>Revisión médica mensual</td>
+                                <td>Consultorio</td>
+                            </tr>
+                            <tr>
+                                <td>01/03/2025</td>
+                                <td>3:00 PM</td>
+                                <td>Celebración cumpleaños del mes</td>
+                                <td>Comedor</td>
+                            </tr>
+                            <tr>
+                                <td>03/03/2025</td>
+                                <td>11:00 AM</td>
+                                <td>Actividad al aire libre</td>
+                                <td>Jardín</td>
+                            </tr>
+                            <tr>
+                                <td>05/03/2025</td>
+                                <td>4:00 PM</td>
+                                <td>Cine comunitario</td>
+                                <td>Sala común</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="text-end mt-3">
+                    <a href="#" class="btn btn-sm btn-outline-primary">Ver calendario completo</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="dashboard-container">
+                <h3 class="mb-4">
+                    <i class="fas fa-envelope me-2 text-warning"></i>
+                    Contacto Rápido
+                </h3>
+                <form>
+                    <div class="mb-3">
+                        <label for="contactSubject" class="form-label">Asunto</label>
+                        <select class="form-select" id="contactSubject">
+                            <option selected>Seleccione un asunto...</option>
+                            <option value="consulta">Consulta médica</option>
+                            <option value="visita">Programar visita</option>
+                            <option value="solicitud">Solicitud especial</option>
+                            <option value="otro">Otro</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="contactMessage" class="form-label">Mensaje</label>
+                        <textarea class="form-control" id="contactMessage" rows="5" placeholder="Escriba su mensaje aquí..."></textarea>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane me-2"></i>Enviar Mensaje
+                        </button>
+                    </div>
+                </form>
+                
+                <hr class="my-4">
+                
+                <h4 class="mb-3">Contactos Importantes</h4>
+                <ul class="list-group">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fas fa-phone-alt text-primary me-2"></i>
+                            Recepción
+                        </div>
+                        <span>+123 456 7890</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fas fa-user-md text-danger me-2"></i>
+                            Médico de guardia
+                        </div>
+                        <span>+123 456 7891</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <i class="fas fa-envelope text-info me-2"></i>
+                            Correo electrónico
+                        </div>
+                        <span>info@newhope.com</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="dashboard-container">
+                <h3 class="mb-4">
+                    <i class="fas fa-images me-2 text-info"></i>
+                    Galería de Momentos Recientes
+                </h3>
+                <div class="row g-3">
+                    <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                        <div class="card h-100">
+                            <img src="/api/placeholder/200/150" class="card-img-top" alt="Actividad 1">
+                            <div class="card-body p-2">
+                                <p class="card-text small text-muted mb-0">Taller de manualidades</p>
+                                <p class="card-text small">Hace 2 días</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                        <div class="card h-100">
+                            <img src="/api/placeholder/200/150" class="card-img-top" alt="Actividad 2">
+                            <div class="card-body p-2">
+                                <p class="card-text small text-muted mb-0">Celebración</p>
+                                <p class="card-text small">Hace 1 semana</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                        <div class="card h-100">
+                            <img src="/api/placeholder/200/150" class="card-img-top" alt="Actividad 3">
+                            <div class="card-body p-2">
+                                <p class="card-text small text-muted mb-0">Paseo en jardín</p>
+                                <p class="card-text small">Hace 1 semana</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                        <div class="card h-100">
+                            <img src="/api/placeholder/200/150" class="card-img-top" alt="Actividad 4">
+                            <div class="card-body p-2">
+                                <p class="card-text small text-muted mb-0">Musicoterapia</p>
+                                <p class="card-text small">Hace 2 semanas</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                        <div class="card h-100">
+                            <img src="/api/placeholder/200/150" class="card-img-top" alt="Actividad 5">
+                            <div class="card-body p-2">
+                                <p class="card-text small text-muted mb-0">Juegos grupales</p>
+                                <p class="card-text small">Hace 2 semanas</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-sm-4 col-md-3 col-lg-2">
+                        <div class="card h-100">
+                            <img src="/api/placeholder/200/150" class="card-img-top" alt="Actividad 6">
+                            <div class="card-body p-2">
+                                <p class="card-text small text-muted mb-0">Clase de arte</p>
+                                <p class="card-text small">Hace 3 semanas</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-end mt-3">
+                    <a href="#" class="btn btn-sm btn-outline-primary">Ver galería completa</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

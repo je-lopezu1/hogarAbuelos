@@ -46,4 +46,4 @@ def update_resident_view(request, pk):
 def resident_doses_view(request, resident_pk):
     resident = get_object_or_404(Resident, pk=resident_pk)
     doses = rl.get_all_resident_medication_doses(resident)
-    return render(request, 'list_doses.html', {'resident': resident, 'doses': doses})
+    return render(request, 'resident_doses.html', {'resident': resident, 'doses': doses})

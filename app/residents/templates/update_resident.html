@@ -1,22 +1,61 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Actualizar Residente</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-</head>
-<body class="container mt-4">
-    <h1>Actualizar Residente</h1>
+{% extends 'base.html' %}
+{% load widget_tweaks %}
 
-    {% load widget_tweaks %}
+{% block title %}Actualizar Residente{% endblock %}
 
-    <form method="POST">
-        {% csrf_token %}
-        <form method="POST">
-            {% csrf_token %}
-            {{ form.as_p }} <!-- Renderiza el formulario automáticamente -->
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h2 class="text-center">Actualizar Residente</h2>
+    </div>
+</div>
 
-        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-        <a href="{% url 'medications:medications_view' %}" class="btn btn-secondary">Cancelar</a>
-    </form>
-</body>
-</html>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="content-card">
+                {% if form.errors %}
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    <strong>¡Ups!</strong> Hay algunos errores en el formulario.
+                </div>
+                {% endif %}
+
+                <form method="POST">
+                    {% csrf_token %}
+                    
+                    {% for field in form %}
+                    <div class="mb-3">
+                        <label for="{{ field.id_for_label }}" class="form-label fw-bold">{{ field.label }}</label>
+                        {% if field.name == 'medications' %}
+                            {{ field|add_class:"form-select" }}
+                        {% else %}
+                            {{ field|add_class:"form-control" }}
+                        {% endif %}
+                        
+                        {% if field.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ field.errors }}
+                        </div>
+                        {% endif %}
+                        
+                        {% if field.help_text %}
+                        <div class="form-text">{{ field.help_text }}</div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{% url 'residents:residents_view' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i>Cancelar
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save me-2"></i>Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
