@@ -1,0 +1,231 @@
+{% extends 'base.html' %}
+{% load auth_extras %}
+
+{% block title %}Panel de Control - Paciente{% endblock %}
+
+{% block extra_css %}
+<style>
+    .stat-card {
+        background-color: white;
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s;
+        height: 100%;
+        border-left: 4px solid var(--accent-blue);
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    .stat-card .stat-icon {
+        font-size: 2.5rem;
+        color: var(--accent-blue);
+        margin-bottom: 15px;
+    }
+    
+    .stat-card .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--text-dark);
+    }
+    
+    .stat-card .stat-title {
+        font-size: 1.1rem;
+        color: #757575;
+    }
+    
+    .medication-card {
+        background-color: white;
+        border-radius: 15px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s;
+        border-left: 4px solid var(--primary-green);
+    }
+    
+    .medication-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    .recent-item {
+        padding: 15px;
+        border-bottom: 1px solid #f0f0f0;
+        transition: background-color 0.3s;
+    }
+    
+    .recent-item:hover {
+        background-color: var(--light-green);
+    }
+    
+    .recent-item:last-child {
+        border-bottom: none;
+    }
+    
+    .panel-title {
+        font-size: 1.3rem;
+        font-weight: 600;
+        color: var(--primary-green);
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid var(--light-green);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h2 class="text-center">
+            <i class="fas fa-user me-2"></i>Mi Panel de Paciente
+        </h2>
+        <p class="text-center text-light">
+            Bienvenido/a, {{ request.user.get_full_name }}
+        </p>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Información del paciente -->
+    <div class="content-card mb-4">
+        <div class="row">
+            <div class="col-md-9">
+                <h3 class="panel-title">
+                    <i class="fas fa-id-card me-2"></i>Mi Información Personal
+                </h3>
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">Nombre:</div>
+                    <div class="col-md-8">{{ resident.name }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">Edad:</div>
+                    <div class="col-md-8">{{ resident.age }} años</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">Condición médica:</div>
+                    <div class="col-md-8">{{ resident.medical_condition }}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">Médicos asignados:</div>
+                    <div class="col-md-8">
+                        {% if doctors %}
+                            <ul class="list-unstyled">
+                                {% for doctor in doctors %}
+                                    <li><i class="fas fa-user-md me-2 text-primary"></i>Dr./Dra. {{ doctor.user.get_full_name }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            <span class="text-muted">No hay médicos asignados actualmente.</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 text-center">
+                <div class="bg-light p-3 rounded-circle d-inline-block mb-3">
+                    <i class="fas fa-user-circle fa-6x text-primary"></i>
+                </div>
+                <p class="mb-1"><strong>Teléfono:</strong></p>
+                <p class="mb-1">{{ profile.phone_number|default:"No registrado" }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Estadísticas rápidas -->
+    <div class="row mb-4">
+        <div class="col-md-6 mb-4">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-pills"></i>
+                </div>
+                <div class="stat-value">{{ medications.count }}</div>
+                <div class="stat-title">Medicamentos actuales</div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="fas fa-clipboard-check"></i>
+                </div>
+                <div class="stat-value">{{ recent_doses|length }}</div>
+                <div class="stat-title">Dosis recientes</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Lista de medicamentos -->
+<!-- Lista de medicamentos -->
+<div class="col-lg-6 mb-4">
+    <div class="content-card h-100">
+        <h3 class="panel-title">
+            <i class="fas fa-prescription-bottle-alt me-2"></i>Mis Medicamentos
+        </h3>
+        
+        {% if medication_with_last_doses %}
+        <div class="medications-list">
+            {% for item in medication_with_last_doses %}
+            <div class="medication-card">
+                <h5>
+                    <i class="fas fa-capsules me-2 text-success"></i>{{ item.medication.name }}
+                </h5>
+                
+                {% if item.last_dose %}
+                <p class="mb-1">
+                    <i class="fas fa-clock me-2 text-primary"></i>
+                    <strong>Última dosis:</strong> {{ item.last_dose.day|date:"d/m/Y" }} {{ item.last_dose.time }}
+                </p>
+                <p class="mb-0">
+                    <i class="fas fa-syringe me-2 text-primary"></i>
+                    <strong>Cantidad:</strong> {{ item.last_dose.dose }}
+                </p>
+                {% else %}
+                <p class="text-muted mb-0">No hay registro de dosis para este medicamento.</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+            <i class="fas fa-prescription-bottle-alt fa-3x mb-3 text-muted"></i>
+            <p>No tiene medicamentos asignados actualmente.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+<!-- Historial de dosis -->
+<div class="col-lg-6 mb-4">
+    <div class="content-card h-100">
+        <h3 class="panel-title">
+            <i class="fas fa-history me-2"></i>Historial de Dosis
+        </h3>
+        
+        {% if recent_doses %}
+        <div class="recent-doses-list">
+            {% for dose in recent_doses %}
+            <div class="recent-item">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h5 class="mb-1">{{ dose.medication_name }}</h5>
+                        <p class="text-muted mb-0">
+                            <i class="fas fa-syringe me-1"></i>Dosis: {{ dose.dose }}
+                        </p>
+                    </div>
+                    <span class="badge bg-success rounded-pill">{{ dose.day|date:"d/m/Y" }} {{ dose.time }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+            <i class="fas fa-clipboard-list fa-3x mb-3 text-muted"></i>
+            <p>No hay dosis registradas recientemente.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

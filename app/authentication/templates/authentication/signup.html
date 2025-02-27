@@ -1,0 +1,293 @@
+{% extends 'base.html' %}
+
+{% block title %}Registro - Hogar Gerontológico New Hope{% endblock %}
+
+{% block extra_css %}
+<style>
+    .field-section {
+        display: none;
+        padding: 15px;
+        margin-top: 15px;
+        border-radius: 10px;
+        background-color: rgba(91, 168, 90, 0.1);
+    }
+    
+    .section-title {
+        font-size: 1.2rem;
+        color: var(--primary-green);
+        margin-bottom: 15px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h2 class="text-center">
+            <i class="fas fa-user-plus me-2"></i>Crear Cuenta
+        </h2>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="content-card">
+                {% if form.errors %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <h5><i class="fas fa-exclamation-triangle me-2"></i>Por favor, corrija los errores a continuación.</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endif %}
+                
+                <form method="post" class="p-3">
+                    {% csrf_token %}
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.username.id_for_label }}" class="form-label fw-bold">
+                                <i class="fas fa-user me-2"></i>Nombre de usuario
+                            </label>
+                            {{ form.username }}
+                            {% if form.username.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.username.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.email.id_for_label }}" class="form-label fw-bold">
+                                <i class="fas fa-envelope me-2"></i>Correo electrónico
+                            </label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.email.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.first_name.id_for_label }}" class="form-label fw-bold">
+                                <i class="fas fa-id-card me-2"></i>Nombre
+                            </label>
+                            {{ form.first_name }}
+                            {% if form.first_name.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.first_name.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.last_name.id_for_label }}" class="form-label fw-bold">
+                                <i class="fas fa-id-card me-2"></i>Apellidos
+                            </label>
+                            {{ form.last_name }}
+                            {% if form.last_name.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.last_name.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.password1.id_for_label }}" class="form-label fw-bold">
+                                <i class="fas fa-lock me-2"></i>Contraseña
+                            </label>
+                            {{ form.password1 }}
+                            {% if form.password1.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.password1.errors }}
+                                </div>
+                            {% else %}
+                                <div class="form-text">
+                                    Su contraseña debe tener al menos 8 caracteres y no puede ser demasiado común.
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.password2.id_for_label }}" class="form-label fw-bold">
+                                <i class="fas fa-lock me-2"></i>Confirmar contraseña
+                            </label>
+                            {{ form.password2 }}
+                            {% if form.password2.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.password2.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.phone_number.id_for_label }}" class="form-label fw-bold">
+                                <i class="fas fa-phone me-2"></i>Número telefónico
+                            </label>
+                            {{ form.phone_number }}
+                            {% if form.phone_number.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.phone_number.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="{{ form.user_type.id_for_label }}" class="form-label fw-bold">
+                                <i class="fas fa-user-tag me-2"></i>Tipo de usuario
+                            </label>
+                            {{ form.user_type }}
+                            {% if form.user_type.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {{ form.user_type.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Campos específicos para Doctor -->
+                    <div id="doctor-fields" class="field-section">
+                        <h5 class="section-title">
+                            <i class="fas fa-user-md me-2"></i>Información del Doctor
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="{{ form.specialty.id_for_label }}" class="form-label fw-bold">
+                                    <i class="fas fa-stethoscope me-2"></i>Especialidad médica
+                                </label>
+                                {{ form.specialty }}
+                                {% if form.specialty.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.specialty.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-12 mb-3">
+                                <label for="{{ form.patients.id_for_label }}" class="form-label fw-bold">
+                                    <i class="fas fa-users me-2"></i>Pacientes asignados
+                                </label>
+                                {{ form.patients }}
+                                <div class="form-text">
+                                    Mantenga presionada la tecla "Control" (o "Command" en Mac) para seleccionar múltiples pacientes.
+                                </div>
+                                {% if form.patients.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.patients.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Campos específicos para Paciente -->
+                    <div id="patient-fields" class="field-section">
+                        <h5 class="section-title">
+                            <i class="fas fa-procedures me-2"></i>Información del Paciente
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="{{ form.resident.id_for_label }}" class="form-label fw-bold">
+                                    <i class="fas fa-id-badge me-2"></i>Perfil de residente asociado
+                                </label>
+                                {{ form.resident }}
+                                {% if form.resident.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.resident.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Campos específicos para Familiar -->
+                    <div id="family-fields" class="field-section">
+                        <h5 class="section-title">
+                            <i class="fas fa-users me-2"></i>Información del Familiar
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label for="{{ form.relationship.id_for_label }}" class="form-label fw-bold">
+                                    <i class="fas fa-heart me-2"></i>Relación con el residente
+                                </label>
+                                {{ form.relationship }}
+                                {% if form.relationship.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.relationship.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-12 mb-3">
+                                <label for="{{ form.related_residents.id_for_label }}" class="form-label fw-bold">
+                                    <i class="fas fa-user-friends me-2"></i>Residentes relacionados
+                                </label>
+                                {{ form.related_residents }}
+                                <div class="form-text">
+                                    Mantenga presionada la tecla "Control" (o "Command" en Mac) para seleccionar múltiples residentes.
+                                </div>
+                                {% if form.related_residents.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ form.related_residents.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary py-2">
+                            <i class="fas fa-user-plus me-2"></i>Registrarse
+                        </button>
+                    </div>
+                </form>
+                
+                <div class="text-center mt-4">
+                    <p>¿Ya tiene una cuenta? <a href="{% url 'authentication:login' %}" class="text-primary">Inicie sesión aquí</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const userTypeSelect = document.getElementById('id_user_type');
+        const doctorFields = document.getElementById('doctor-fields');
+        const patientFields = document.getElementById('patient-fields');
+        const familyFields = document.getElementById('family-fields');
+        
+        function showRelevantFields() {
+            // Ocultar todos los campos específicos
+            doctorFields.style.display = 'none';
+            patientFields.style.display = 'none';
+            familyFields.style.display = 'none';
+            
+            // Mostrar los campos relevantes según el tipo de usuario seleccionado
+            const selectedType = userTypeSelect.value;
+            
+            if (selectedType === 'doctor') {
+                doctorFields.style.display = 'block';
+            } else if (selectedType === 'patient') {
+                patientFields.style.display = 'block';
+            } else if (selectedType === 'family') {
+                familyFields.style.display = 'block';
+            }
+        }
+        
+        // Mostrar los campos relevantes al cargar la página
+        showRelevantFields();
+        
+        // Actualizar campos cuando cambia el tipo de usuario
+        userTypeSelect.addEventListener('change', showRelevantFields);
+    });
+</script>
+{% endblock %}

@@ -298,6 +298,41 @@
         .fa, .fas, .far, .fal, .fab {
             font-size: 1.2em;
         }
+        
+        /* Estilos para el menú de usuario */
+        .user-profile {
+            display: flex;
+            align-items: center;
+        }
+        
+        .user-profile img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        
+        .dropdown-menu {
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            border: none;
+            padding: 10px;
+        }
+        
+        .dropdown-item {
+            border-radius: 10px;
+            padding: 10px 15px;
+            transition: all 0.2s;
+        }
+        
+        .dropdown-item:hover {
+            background-color: var(--light-green);
+        }
+        
+        .dropdown-item i {
+            margin-right: 10px;
+            color: var(--primary-green);
+        }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
@@ -313,22 +348,83 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
+                <ul class="navbar-nav me-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="/">
                             <i class="fas fa-home me-2"></i>Inicio
                         </a>
                     </li>
+                    {% if user.is_authenticated %}
+                        {% if user.profile.is_doctor %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'residents:residents_view' %}">
+                                <i class="fas fa-user-friends me-2"></i>Residentes
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'medications:medications_view' %}">
+                                <i class="fas fa-pills me-2"></i>Medicamentos
+                            </a>
+                        </li>
+                        {% endif %}
+                        
+                        {% if user.profile.is_doctor or user.profile.is_family %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'dashboard:index' %}">
+                                <i class="fas fa-tachometer-alt me-2"></i>Panel
+                            </a>
+                        </li>
+                        {% endif %}
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="#services">
+                                <i class="fas fa-hand-holding-heart me-2"></i>Servicios
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#about">
+                                <i class="fas fa-info-circle me-2"></i>Nosotros
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#contact">
+                                <i class="fas fa-envelope me-2"></i>Contacto
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+                
+                <ul class="navbar-nav">
+                    {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="user-profile">
+                                <i class="fas fa-user-circle fa-lg me-2"></i>
+                                {{ user.get_full_name|default:user.username }}
+                            </div>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="{% url 'dashboard:index' %}">
+                                <i class="fas fa-tachometer-alt"></i>Mi Panel
+                            </a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'authentication:logout' %}">
+                                <i class="fas fa-sign-out-alt"></i>Cerrar Sesión
+                            </a></li>
+                        </ul>
+                    </li>
+                    {% else %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'residents:residents_view' %}">
-                            <i class="fas fa-user-friends me-2"></i>Residentes
+                        <a class="nav-link" href="{% url 'authentication:login' %}">
+                            <i class="fas fa-sign-in-alt me-2"></i>Ingresar
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'medications:medications_view' %}">
-                            <i class="fas fa-pills me-2"></i>Medicamentos
+                        <a class="nav-link" href="{% url 'authentication:signup' %}">
+                            <i class="fas fa-user-plus me-2"></i>Registrarse
                         </a>
                     </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
