@@ -17,6 +17,60 @@ from medication_dose.models import MedicationDose
 from authentication.models import UserProfile
 from dashboard.models import DashboardPreference
 
+# Contraseña estándar para facilitar las pruebas
+DEFAULT_PASSWORD = 'password123'
+
+# Función para limpiar la base de datos antes de repoblarla
+def clean_database():
+    print("\n=== LIMPIANDO BASE DE DATOS ===")
+    print("¡ATENCIÓN! Esto eliminará todos los datos existentes.")
+    confirm = input("¿Estás seguro de que deseas continuar? (s/n): ")
+    
+    if confirm.lower() != 's':
+        print("Operación cancelada.")
+        return False
+    
+    # Guardar el superusuario antes de eliminar todo
+    preserve_superuser = input("¿Preservar el superusuario? (s/n): ")
+    superuser = None
+    
+    if preserve_superuser.lower() == 's':
+        try:
+            superuser = User.objects.filter(is_superuser=True).first()
+            if superuser:
+                print(f"Se preservará el superusuario: {superuser.username}")
+        except:
+            print("No se encontró ningún superusuario.")
+    
+    try:
+        print("Eliminando dosis de medicamentos...")
+        MedicationDose.objects.all().delete()
+        
+        print("Eliminando perfiles de usuario...")
+        UserProfile.objects.all().delete()
+        
+        print("Eliminando medicamentos...")
+        Medication.objects.all().delete()
+        
+        print("Eliminando residentes...")
+        Resident.objects.all().delete()
+        
+        print("Eliminando preferencias de dashboard...")
+        DashboardPreference.objects.all().delete()
+        
+        print("Eliminando usuarios...")
+        if preserve_superuser.lower() == 's' and superuser:
+            User.objects.exclude(id=superuser.id).delete()
+        else:
+            User.objects.all().delete()
+        
+        print("Base de datos limpiada con éxito.")
+        return True
+    
+    except Exception as e:
+        print(f"Error al limpiar la base de datos: {e}")
+        return False
+
 # Función para crear medicamentos de muestra
 def create_medications():
     medications = [
@@ -26,16 +80,16 @@ def create_medications():
         'Esomeprazol', 'Amlodipino', 'Lisinopril', 'Metoprolol', 'Warfarina'
     ]
     
-    print("Creando medicamentos...")
+    print("\n=== CREANDO MEDICAMENTOS ===")
     created_medications = []
     
     for med_name in medications:
         medication, created = Medication.objects.get_or_create(name=med_name)
         created_medications.append(medication)
         if created:
-            print(f"  Creado medicamento: {med_name}")
+            print(f"  ✓ Creado medicamento: {med_name}")
         else:
-            print(f"  Medicamento ya existe: {med_name}")
+            print(f"  ⚠ Medicamento ya existe: {med_name}")
     
     return created_medications
 
@@ -54,7 +108,7 @@ def create_residents():
         'Fibrilación auricular', 'Enfermedad renal crónica'
     ]
     
-    print("Creando residentes...")
+    print("\n=== CREANDO RESIDENTES ===")
     created_residents = []
     
     for i in range(20):
@@ -74,15 +128,15 @@ def create_residents():
         
         created_residents.append(resident)
         if created:
-            print(f"  Creado residente: {name}, {age} años, {condition}")
+            print(f"  ✓ Creado residente: {name}, {age} años, {condition}")
         else:
-            print(f"  Residente ya existe: {name}")
+            print(f"  ⚠ Residente ya existe: {name}")
     
     return created_residents
 
 # Función para asignar medicamentos aleatorios a los residentes
 def assign_medications(residents, medications):
-    print("Asignando medicamentos a residentes...")
+    print("\n=== ASIGNANDO MEDICAMENTOS A RESIDENTES ===")
     
     for resident in residents:
         # Limpiar medicamentos existentes para evitar duplicados
@@ -95,13 +149,22 @@ def assign_medications(residents, medications):
         for med in selected_meds:
             resident.medications.add(med)
         
-        print(f"  {resident.name} recibe {num_meds} medicamentos")
+        meds_list = ", ".join([med.name for med in selected_meds])
+        print(f"  ✓ {resident.name} recibe {num_meds} medicamentos: {meds_list}")
     
     return residents
 
 # Función para crear usuarios y perfiles
 def create_users_and_profiles(residents):
-    print("Creando usuarios y perfiles...")
+    print("\n=== CREANDO USUARIOS Y PERFILES ===")
+    print(f"Contraseña para todos los usuarios: {DEFAULT_PASSWORD}")
+    
+    # Crear credenciales
+    created_users = {
+        'doctores': [],
+        'pacientes': [],
+        'familiares': []
+    }
     
     # Crear médicos
     doctors = []
@@ -119,13 +182,18 @@ def create_users_and_profiles(residents):
         )
         
         if created:
-            user.set_password('password123')
+            user.set_password(DEFAULT_PASSWORD)
             user.save()
-            print(f"  Creado usuario doctor: {username}")
+            print(f"  ✓ Creado usuario doctor: {username}")
         else:
-            print(f"  Usuario doctor ya existe: {username}")
+            print(f"  ⚠ Usuario doctor ya existe: {username}")
+            # Actualizar contraseña para asegurar consistencia
+            user.set_password(DEFAULT_PASSWORD)
+            user.save()
         
-        profile, created = UserProfile.objects.get_or_create(
+        created_users['doctores'].append({'username': username, 'password': DEFAULT_PASSWORD})
+        
+        profile, profile_created = UserProfile.objects.get_or_create(
             user=user,
             defaults={
                 'user_type': 'doctor',
@@ -133,8 +201,10 @@ def create_users_and_profiles(residents):
             }
         )
         
-        if created:
-            print(f"  Creado perfil para: {username}")
+        if profile_created:
+            print(f"  ✓ Creado perfil para: {username}")
+        else:
+            print(f"  ⚠ Perfil ya existe para: {username}")
         
         # Asignar pacientes aleatorios (entre 3 y 8)
         profile.patients.clear()  # Limpiar pacientes existentes
@@ -144,7 +214,8 @@ def create_users_and_profiles(residents):
         for patient in assigned_patients:
             profile.patients.add(patient)
             
-        print(f"  Doctor {username} asignado a {num_patients} pacientes")
+        patients_list = ", ".join([patient.name for patient in assigned_patients])
+        print(f"  ✓ Doctor {username} asignado a {num_patients} pacientes: {patients_list}")
         doctors.append(profile)
     
     # Crear pacientes (usuarios para residentes)
@@ -162,13 +233,18 @@ def create_users_and_profiles(residents):
         )
         
         if created:
-            user.set_password('password123')
+            user.set_password(DEFAULT_PASSWORD)
             user.save()
-            print(f"  Creado usuario paciente: {username}")
+            print(f"  ✓ Creado usuario paciente: {username}")
         else:
-            print(f"  Usuario paciente ya existe: {username}")
+            print(f"  ⚠ Usuario paciente ya existe: {username}")
+            # Actualizar contraseña para asegurar consistencia
+            user.set_password(DEFAULT_PASSWORD)
+            user.save()
         
-        profile, created = UserProfile.objects.get_or_create(
+        created_users['pacientes'].append({'username': username, 'password': DEFAULT_PASSWORD})
+        
+        profile, profile_created = UserProfile.objects.get_or_create(
             user=user,
             defaults={
                 'user_type': 'patient',
@@ -176,8 +252,13 @@ def create_users_and_profiles(residents):
             }
         )
         
-        if created:
-            print(f"  Creado perfil para: {username}, asociado a residente: {resident.name}")
+        if profile_created:
+            print(f"  ✓ Creado perfil para: {username}, asociado a residente: {resident.name}")
+        else:
+            # Asegurar que el perfil está asociado al residente correcto
+            profile.resident = resident
+            profile.save()
+            print(f"  ⚠ Perfil actualizado para: {username}, asociado a residente: {resident.name}")
     
     # Crear familiares
     for i in range(8):
@@ -194,13 +275,18 @@ def create_users_and_profiles(residents):
         )
         
         if created:
-            user.set_password('password123')
+            user.set_password(DEFAULT_PASSWORD)
             user.save()
-            print(f"  Creado usuario familiar: {username}")
+            print(f"  ✓ Creado usuario familiar: {username}")
         else:
-            print(f"  Usuario familiar ya existe: {username}")
+            print(f"  ⚠ Usuario familiar ya existe: {username}")
+            # Actualizar contraseña para asegurar consistencia
+            user.set_password(DEFAULT_PASSWORD)
+            user.save()
         
-        profile, created = UserProfile.objects.get_or_create(
+        created_users['familiares'].append({'username': username, 'password': DEFAULT_PASSWORD})
+        
+        profile, profile_created = UserProfile.objects.get_or_create(
             user=user,
             defaults={
                 'user_type': 'family',
@@ -208,8 +294,10 @@ def create_users_and_profiles(residents):
             }
         )
         
-        if created:
-            print(f"  Creado perfil para: {username}")
+        if profile_created:
+            print(f"  ✓ Creado perfil para: {username}")
+        else:
+            print(f"  ⚠ Perfil ya existe para: {username}")
         
         # Asignar residentes aleatorios (entre 1 y 2)
         profile.related_residents.clear()  # Limpiar residentes existentes
@@ -218,14 +306,15 @@ def create_users_and_profiles(residents):
         
         for relative in assigned_relatives:
             profile.related_residents.add(relative)
-            
-        print(f"  Familiar {username} asignado a {num_relatives} residentes")
+        
+        relatives_list = ", ".join([relative.name for relative in assigned_relatives])
+        print(f"  ✓ Familiar {username} asignado a {num_relatives} residentes: {relatives_list}")
     
-    return doctors
+    return doctors, created_users
 
 # Función para crear dosis de medicamentos
 def create_medication_doses(residents):
-    print("Creando dosis de medicamentos...")
+    print("\n=== CREANDO DOSIS DE MEDICAMENTOS ===")
     
     # Generar fechas para los últimos 30 días
     end_date = timezone.now().date()
@@ -234,12 +323,15 @@ def create_medication_doses(residents):
     # Tiempos comunes para tomar medicamentos
     times = ['08:00', '12:00', '16:00', '20:00']
     
+    total_doses = 0
+    
     for resident in residents:
         medications = resident.medications.all()
         if not medications:
             continue
         
         print(f"  Generando dosis para: {resident.name}")
+        resident_doses = 0
         
         # Para cada medicamento del residente
         for medication in medications:
@@ -264,29 +356,72 @@ def create_medication_doses(residents):
                         dose=dose,
                         day=current_date,
                         time=time_str,
-                        medication_name=medication.name  # Assuming this field exists
+                        medication_name=medication.name
                     )
+                    
+                    total_doses += 1
+                    resident_doses += 1
+        
+        print(f"    ✓ {resident_doses} dosis creadas para {resident.name}")
     
-    # Contar dosis creadas
-    total_doses = MedicationDose.objects.count()
-    print(f"Total de dosis creadas: {total_doses}")
+    print(f"\nTotal de dosis creadas: {total_doses}")
+
+# Imprimir resumen de credenciales
+def print_credentials_summary(users):
+    print("\n========================================================")
+    print("              RESUMEN DE CREDENCIALES")
+    print("========================================================")
+    print(f"Contraseña universal: {DEFAULT_PASSWORD}")
+    print("--------------------------------------------------------")
+    
+    print("\n👨‍⚕️ MÉDICOS:")
+    for doctor in users['doctores']:
+        print(f"  Usuario: {doctor['username']:<15} | Contraseña: {doctor['password']}")
+    
+    print("\n👴 PACIENTES:")
+    for patient in users['pacientes']:
+        print(f"  Usuario: {patient['username']:<15} | Contraseña: {patient['password']}")
+    
+    print("\n👪 FAMILIARES:")
+    for family in users['familiares']:
+        print(f"  Usuario: {family['username']:<15} | Contraseña: {family['password']}")
+    
+    print("\n========================================================")
+    print("¡Base de datos poblada con éxito!")
+    print("Utiliza estas credenciales para iniciar sesión en el sistema.")
+    print("========================================================")
 
 # Función principal que ejecuta todas las demás
 def populate_db():
+    print("\n============================================")
+    print("   SCRIPT DE GENERACIÓN DE DATOS FICTICIOS")
+    print("============================================")
+    
+    # Limpiar base de datos
+    should_clean = input("¿Deseas limpiar la base de datos antes de poblarla? (s/n): ")
+    if should_clean.lower() == 's':
+        if not clean_database():
+            return
+    
     medications = create_medications()
     residents = create_residents()
     assign_medications(residents, medications)
-    doctors = create_users_and_profiles(residents)
+    doctors, created_users = create_users_and_profiles(residents)
     create_medication_doses(residents)
     
-    print("\nBase de datos poblada con éxito.")
-    print("-------------------------------")
-    print(f"Medicamentos creados: {len(medications)}")
-    print(f"Residentes creados: {len(residents)}")
-    print(f"Usuarios creados: {User.objects.count()}")
-    print(f"Dosis registradas: {MedicationDose.objects.count()}")
+    print("\n=== RESUMEN DE DATOS CREADOS ===")
+    print(f"✓ Medicamentos: {len(medications)}")
+    print(f"✓ Residentes: {len(residents)}")
+    print(f"✓ Usuarios: {User.objects.count()}")
+    print(f"✓ Dosis de medicamentos: {MedicationDose.objects.count()}")
+    
+    print_credentials_summary(created_users)
 
 # Ejecutar función principal si el script se ejecuta directamente
 if __name__ == '__main__':
-    print("Iniciando script para poblar la base de datos...")
-    populate_db()
+    try:
+        populate_db()
+    except KeyboardInterrupt:
+        print("\nOperación cancelada por el usuario.")
+    except Exception as e:
+        print(f"\nError inesperado: {e}")
