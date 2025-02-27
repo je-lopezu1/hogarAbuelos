@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block title %}Hogar Gerontológico New Hope - Cuidado para adultos mayores{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container hero-content">
+        <h1 class="display-4">Bienvenidos a Hogar Gerontológico New Hope</h1>
+        <p class="lead">Un espacio donde nuestros adultos mayores reciben atención de calidad, calidez y respeto que merecen</p>
+        
+        {% if user.is_authenticated %}
+            <a href="{% url 'dashboard:index' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-tachometer-alt me-2"></i>Ir a Mi Panel
+            </a>
+        {% else %}
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <a href="{% url 'authentication:login' %}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+                </a>
+                <a href="{% url 'authentication:signup' %}" class="btn btn-success btn-lg">
+                    <i class="fas fa-user-plus me-2"></i>Registrarse
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="services" class="features-section">
+    <div class="container">
+        <h2 class="text-center mb-5" style="font-size: 2.5rem; color: var(--primary-green);">
+            <i class="fas fa-star me-2" style="color: var(--accent-warm);"></i>
+            Nuestros Servicios
+            <i class="fas fa-star ms-2" style="color: var(--accent-warm);"></i>
+        </h2>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="icon-box">
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <h3 class="text-center mb-3">Atención Médica</h3>
+                    <p class="text-center fs-5">Contamos con profesionales de la salud capacitados para brindar atención médica especializada las 24 horas.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="icon-box">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <h3 class="text-center mb-3">Alimentación Balanceada</h3>
+                    <p class="text-center fs-5">Ofrecemos dietas personalizadas supervisadas por nutricionistas para garantizar una alimentación saludable.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="icon-box">
+                        <i class="fas fa-gamepad"></i>
+                    </div>
+                    <h3 class="text-center mb-3">Actividades Recreativas</h3>
+                    <p class="text-center fs-5">Desarrollamos programas de actividades físicas, cognitivas y sociales para mantener activos a nuestros residentes.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section id="about" class="cta-section">
+    <div class="container" style="position: relative; z-index: 1;">
+        <h2 class="mb-4" style="font-size: 2.5rem;">Ofrecemos Un Lugar Seguro y Acogedor</h2>
+        <p class="lead mb-5">Permítanos ser parte del cuidado y bienestar de su ser querido</p>
+        
+        {% if user.is_authenticated %}
+            <a href="{% url 'dashboard:index' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-tachometer-alt me-2"></i>Ir a Mi Panel
+            </a>
+        {% else %}
+            <a href="{% url 'authentication:signup' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-user-plus me-2"></i>Regístrese Ahora
+            </a>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section id="contact" class="contact-section">
+    <div class="container">
+        <h2 class="text-center mb-5" style="font-size: 2.5rem; color: var(--primary-green);">
+            <i class="fas fa-envelope-open-text me-2" style="color: var(--accent-warm);"></i>
+            Contáctenos
+        </h2>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="contact-info">
+                    <h3 style="color: var(--primary-green);">
+                        <i class="fas fa-address-card me-2"></i>Información de Contacto
+                    </h3>
+                    <p class="fs-5"><i class="fas fa-map-marker-alt me-2"></i> Av. Principal #123, Ciudad</p>
+                    <p class="fs-5"><i class="fas fa-phone me-2"></i> +123 456 7890</p>
+                    <p class="fs-5"><i class="fas fa-envelope me-2"></i> info@hogarnewhope.com</p>
+                </div>
+                <div class="contact-hours mt-4">
+                    <h3 style="color: var(--primary-green);">
+                        <i class="fas fa-clock me-2"></i>Horario de Visitas
+                    </h3>
+                    <p class="fs-5"><i class="fas fa-calendar-day me-2"></i> Lunes a Viernes: 9:00 AM - 7:00 PM</p>
+                    <p class="fs-5"><i class="fas fa-calendar-day me-2"></i> Sábados y Domingos: 10:00 AM - 5:00 PM</p>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <form class="p-4 bg-white rounded-4 shadow">
+                    <div class="mb-3">
+                        <label for="nombre" class="form-label fw-bold">Nombre Completo</label>
+                        <input type="text" class="form-control" id="nombre" placeholder="Ingrese su nombre">
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label fw-bold">Correo Electrónico</label>
+                        <input type="email" class="form-control" id="email" placeholder="ejemplo@correo.com">
+                    </div>
+                    <div class="mb-3">
+                        <label for="telefono" class="form-label fw-bold">Teléfono</label>
+                        <input type="tel" class="form-control" id="telefono" placeholder="123-456-7890">
+                    </div>
+                    <div class="mb-3">
+                        <label for="mensaje" class="form-label fw-bold">Mensaje</label>
+                        <textarea class="form-control" id="mensaje" rows="5" placeholder="¿Cómo podemos ayudarle?"></textarea>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane me-2"></i>Enviar Mensaje
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
