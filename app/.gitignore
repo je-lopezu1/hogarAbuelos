@@ -1,10 +1,15 @@
-# Python bytecode
+# Python bytecode files
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
 .Python
-
+*/__pycache__/
+**/__pycache__/
+apps/*/__pycache__/
+apps/*/*/__pycache__/
+models/__pycache__/
+models/*/__pycache__/
 # Django
 *.log
 *.pot
