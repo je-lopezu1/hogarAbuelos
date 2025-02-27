@@ -1,0 +1,353 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Hogar Gerontológico New Hope{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap">
+    <style>
+        :root {
+            --primary-green: #5BA85A;
+            --secondary-green: #438940;
+            --light-green: #E1F5E1;
+            --accent-green: #8BC34A;
+            --text-dark: #333333;
+            --text-light: #FFFFFF;
+            --accent-warm: #FFB74D;
+            --accent-soft: #FFE0B2;
+            --accent-blue: #64B5F6;
+        }
+        
+        body {
+            font-family: 'Quicksand', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-green);
+            color: var(--text-dark);
+            font-size: 16px;
+            line-height: 1.6;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200" opacity="0.07"><path d="M20,50 Q30,20 50,30 Q70,40 70,60 Q70,80 50,90 Q30,100 20,70 Z" fill="%235BA85A"/><circle cx="150" cy="50" r="20" fill="%23FFB74D"/><path d="M150,120 Q170,100 190,120 Q210,140 190,160 Q170,180 150,160 Q130,140 150,120 Z" fill="%2364B5F6"/><path d="M60,150 Q80,130 100,140 Q120,150 110,170 Q100,190 80,180 Q60,170 60,150 Z" fill="%23FFE0B2"/></svg>');
+            background-repeat: repeat;
+            background-attachment: fixed;
+        }
+        
+        .navbar {
+            background-color: var(--primary-green);
+            border-bottom: 4px solid var(--accent-warm);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            font-size: 1.1rem;
+        }
+        
+        .navbar-brand, .nav-link {
+            color: var(--text-light);
+        }
+        
+        .navbar-brand {
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+        
+        .nav-link {
+            margin: 0 5px;
+            border-radius: 20px;
+            padding: 8px 16px !important;
+            transition: all 0.3s;
+        }
+        
+        .nav-link:hover {
+            background-color: var(--accent-warm);
+            color: var(--text-dark) !important;
+            transform: translateY(-3px);
+        }
+        
+        .feature-card {
+            padding: 30px;
+            margin-bottom: 30px;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            height: 100%;
+            transition: transform 0.3s;
+            background-color: white;
+            border: 2px solid var(--accent-soft);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-warm);
+        }
+        
+        .btn {
+            font-size: 1.1rem;
+            border-radius: 50px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            padding: 10px 24px;
+        }
+        
+        .btn-primary {
+            background-color: var(--accent-blue);
+            border-color: var(--accent-blue);
+        }
+        
+        .btn-primary:hover {
+            background-color: #2196F3;
+            border-color: #2196F3;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn-secondary {
+            background-color: #9E9E9E;
+            border-color: #9E9E9E;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #757575;
+            border-color: #757575;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn-success {
+            background-color: var(--primary-green);
+            border-color: var(--primary-green);
+        }
+        
+        .btn-success:hover {
+            background-color: var(--secondary-green);
+            border-color: var(--secondary-green);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn-danger {
+            background-color: #F44336;
+            border-color: #F44336;
+        }
+        
+        .btn-danger:hover {
+            background-color: #D32F2F;
+            border-color: #D32F2F;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn-info {
+            background-color: var(--accent-blue);
+            border-color: var(--accent-blue);
+            color: white;
+        }
+        
+        .btn-info:hover {
+            background-color: #2196F3;
+            border-color: #2196F3;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            color: white;
+        }
+        
+        .btn-sm {
+            padding: 7px 15px;
+            font-size: 0.95rem;
+        }
+        
+        .btn i {
+            font-size: 1rem;
+        }
+        
+        .page-header {
+            background-color: var(--primary-green);
+            color: var(--text-light);
+            padding: 2.5rem 0;
+            margin-bottom: 2.5rem;
+            border-radius: 0 0 30px 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .page-header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100" opacity="0.1"><circle cx="20" cy="20" r="15" fill="white"/><circle cx="80" cy="80" r="15" fill="white"/><circle cx="80" cy="20" r="10" fill="white"/><circle cx="20" cy="80" r="10" fill="white"/></svg>');
+            background-repeat: repeat;
+            opacity: 0.2;
+        }
+        
+        .page-header h2 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .content-card {
+            background-color: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 2.5rem;
+            margin-bottom: 2.5rem;
+            border: 2px solid var(--accent-soft);
+        }
+        
+        .list-group-item {
+            border-left: 0;
+            border-right: 0;
+            transition: background-color 0.3s;
+            padding: 15px 20px;
+            font-size: 1.1rem;
+        }
+        
+        .list-group-item:hover {
+            background-color: var(--light-green);
+        }
+        
+        .form-control {
+            border-radius: 15px;
+            padding: 12px 20px;
+            border: 2px solid #dee2e6;
+            font-size: 1.1rem;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 0.25rem rgba(76, 175, 80, 0.25);
+        }
+        
+        .form-label {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .table {
+            border-radius: 15px;
+            overflow: hidden;
+            font-size: 1.1rem;
+        }
+        
+        .table thead th {
+            background-color: var(--primary-green);
+            color: var(--text-light);
+            font-weight: 600;
+            border: none;
+            padding: 15px;
+        }
+        
+        .table tbody td {
+            padding: 15px;
+            vertical-align: middle;
+        }
+        
+        .footer {
+            background-color: var(--primary-green);
+            color: var(--text-light);
+            padding: 30px 0;
+            margin-top: 60px;
+            border-top: 4px solid var(--accent-warm);
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        
+        /* Decorative elements */
+        .decorative-icon {
+            position: absolute;
+            opacity: 0.1;
+            z-index: 0;
+        }
+        
+        .decorative-leaf-1 {
+            top: 20px;
+            left: 5%;
+            transform: rotate(-20deg);
+            font-size: 3rem;
+            color: var(--accent-warm);
+        }
+        
+        .decorative-leaf-2 {
+            bottom: 20px;
+            right: 5%;
+            transform: rotate(20deg);
+            font-size: 3rem;
+            color: var(--accent-soft);
+        }
+        
+        /* Accessibility improvements */
+        a, button, input, select, textarea {
+            transition: all 0.2s;
+        }
+        
+        a:focus, button:focus, input:focus, select:focus, textarea:focus {
+            outline: 3px solid var(--accent-warm);
+            outline-offset: 3px;
+        }
+        
+        /* Larger text and icons for better visibility */
+        h1 { font-size: 2.5rem; }
+        h2 { font-size: 2.2rem; }
+        h3 { font-size: 1.8rem; }
+        h4 { font-size: 1.5rem; }
+        h5 { font-size: 1.3rem; }
+        
+        .fa, .fas, .far, .fal, .fab {
+            font-size: 1.2em;
+        }
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-heart me-2"></i>
+                Hogar Gerontológico New Hope
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">
+                            <i class="fas fa-home me-2"></i>Inicio
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'residents:residents_view' %}">
+                            <i class="fas fa-user-friends me-2"></i>Residentes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'medications:medications_view' %}">
+                            <i class="fas fa-pills me-2"></i>Medicamentos
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    {% block content %}{% endblock %}
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="text-center">
+                <p><i class="fas fa-heart me-2"></i> Cuidando con amor desde 2010 <i class="fas fa-heart ms-2"></i></p>
+                <p>&copy; 2025 Hogar Gerontológico New Hope. Todos los derechos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -9,7 +9,7 @@ from datetime import datetime
 def resident_doses_view(request, resident_pk):
     resident = get_object_or_404(Resident, pk=resident_pk)
     doses = mdl.get_all_resident_medication_doses(resident)
-    return render(request, 'list_doses.html', {'resident': resident, 'doses': doses})
+    return render(request, 'resident_doses.html', {'resident': resident, 'doses': doses})
 
 def create_medication_dose_view(request, resident_pk):
     resident = get_object_or_404(Resident, pk=resident_pk)  # Obtener residente

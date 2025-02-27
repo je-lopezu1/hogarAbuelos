@@ -1,0 +1,369 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Panel de Personal - Hogar Gerontológico New Hope{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="dashboard-header d-flex justify-content-between align-items-center">
+        <h2 class="mb-0">
+            <i class="fas fa-user-md me-2"></i>Panel de Personal
+        </h2>
+        <span class="badge bg-light text-dark">Personal Médico</span>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="dashboard-card text-center">
+                <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                <h3 class="h4">Mis Residentes</h3>
+                <p class="display-4 fw-bold mb-0">12</p>
+                <p class="text-muted">Asignados actualmente</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="dashboard-card text-center">
+                <i class="fas fa-pills fa-3x text-warning mb-3"></i>
+                <h3 class="h4">Medicamentos</h3>
+                <p class="display-4 fw-bold mb-0">35</p>
+                <p class="text-muted">Por administrar hoy</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="dashboard-card text-center">
+                <i class="fas fa-clipboard-list fa-3x text-success mb-3"></i>
+                <h3 class="h4">Actividades</h3>
+                <p class="display-4 fw-bold mb-0">5</p>
+                <p class="text-muted">Programadas hoy</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8 mb-4">
+            <div class="dashboard-container">
+                <h3 class="mb-4">
+                    <i class="fas fa-pills me-2 text-warning"></i>
+                    Medicación Pendiente
+                </h3>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Residente</th>
+                                <th>Medicamento</th>
+                                <th>Dosis</th>
+                                <th>Horario</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Ana María Gómez</td>
+                                <td>Losartán</td>
+                                <td>50mg</td>
+                                <td>09:00 AM</td>
+                                <td><span class="badge bg-danger">Pendiente</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary">
+                                        <i class="fas fa-check"></i> Administrar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Juan Pérez López</td>
+                                <td>Metformina</td>
+                                <td>500mg</td>
+                                <td>12:00 PM</td>
+                                <td><span class="badge bg-warning">Próximo</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-primary">
+                                        <i class="fas fa-check"></i> Administrar
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Carmen Rodríguez</td>
+                                <td>Enalapril</td>
+                                <td>10mg</td>
+                                <td>08:00 AM</td>
+                                <td><span class="badge bg-success">Administrado</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-secondary" disabled>
+                                        <i class="fas fa-check"></i> Completado
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Roberto Sánchez</td>
+                                <td>Levotiroxina</td>
+                                <td>75mcg</td>
+                                <td>07:30 AM</td>
+                                <td><span class="badge bg-success">Administrado</span></td>
+                                <td>
+                                    <button class="btn btn-sm btn-outline-secondary" disabled>
+                                        <i class="fas fa-check"></i> Completado
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="text-end mt-3">
+                    <a href="#" class="btn btn-sm btn-outline-primary">
+                        Ver todos los medicamentos
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="dashboard-container">
+                <h3 class="mb-4">
+                    <i class="fas fa-bell me-2 text-danger"></i>
+                    Alertas
+                </h3>
+                <ul class="list-group">
+                    <li class="list-group-item list-group-item-danger d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>URGENTE:</strong> Revisión de signos vitales para Juan Pérez
+                        </div>
+                        <span class="badge bg-danger rounded-pill">Ahora</span>
+                    </li>
+                    <li class="list-group-item list-group-item-warning d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>Recordatorio:</strong> Control de glucosa para Carmen Rodríguez
+                        </div>
+                        <span class="badge bg-warning rounded-pill">30 min</span>
+                    </li>
+                    <li class="list-group-item list-group-item-info d-flex justify-content-between align-items-center">
+                        <div>
+                            <strong>Información:</strong> Cambio de medicación para Ana Gómez
+                        </div>
+                        <span class="badge bg-info rounded-pill">1h</span>
+                    </li>
+                </ul>
+                
+                <h3 class="mt-4 mb-3">
+                    <i class="fas fa-tasks me-2 text-primary"></i>
+                    Tareas Pendientes
+                </h3>
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="task1">
+                            <label class="form-check-label" for="task1">
+                                Actualizar historial médico
+                            </label>
+                            <span class="badge bg-danger float-end">Urgente</span>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="task2">
+                            <label class="form-check-label" for="task2">
+                                Preparar medicación semanal
+                            </label>
+                            <span class="badge bg-warning float-end">Alta</span>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="task3">
+                            <label class="form-check-label" for="task3">
+                                Revisar nuevas órdenes médicas
+                            </label>
+                            <span class="badge bg-info float-end">Media</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="dashboard-container">
+                <h3 class="mb-4">
+                    <i class="fas fa-calendar-alt me-2 text-success"></i>
+                    Actividades de Hoy
+                </h3>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Hora</th>
+                                <th>Actividad</th>
+                                <th>Ubicación</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>08:00 AM</td>
+                                <td>Ejercicios matutinos</td>
+                                <td>Sala común</td>
+                                <td><span class="badge bg-success">Completado</span></td>
+                            </tr>
+                            <tr>
+                                <td>10:30 AM</td>
+                                <td>Taller de manualidades</td>
+                                <td>Sala de actividades</td>
+                                <td><span class="badge bg-primary">En progreso</span></td>
+                            </tr>
+                            <tr>
+                                <td>03:00 PM</td>
+                                <td>Juegos de mesa</td>
+                                <td>Sala común</td>
+                                <td><span class="badge bg-secondary">Pendiente</span></td>
+                            </tr>
+                            <tr>
+                                <td>05:00 PM</td>
+                                <td>Hora musical</td>
+                                <td>Jardín</td>
+                                <td><span class="badge bg-secondary">Pendiente</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="text-end mt-3">
+                    <a href="#" class="btn btn-sm btn-outline-primary">
+                        Ver calendario completo
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="dashboard-container">
+                <h3 class="mb-4">
+                    <i class="fas fa-clipboard-check me-2 text-primary"></i>
+                    Controles Recientes
+                </h3>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Residente</th>
+                                <th>Tipo de Control</th>
+                                <th>Resultado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Hoy, 08:15 AM</td>
+                                <td>Carmen Rodríguez</td>
+                                <td>Presión arterial</td>
+                                <td>130/85 mmHg</td>
+                            </tr>
+                            <tr>
+                                <td>Hoy, 07:45 AM</td>
+                                <td>Juan Pérez</td>
+                                <td>Glucemia</td>
+                                <td>110 mg/dL</td>
+                            </tr>
+                            <tr>
+                                <td>Ayer, 08:30 PM</td>
+                                <td>Ana Gómez</td>
+                                <td>Temperatura</td>
+                                <td>36.5°C</td>
+                            </tr>
+                            <tr>
+                                <td>Ayer, 06:00 PM</td>
+                                <td>Roberto Sánchez</td>
+                                <td>Saturación O2</td>
+                                <td>98%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="text-end mt-3">
+                    <a href="#" class="btn btn-sm btn-outline-primary">
+                        Ver historial completo
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="dashboard-container">
+                <h3 class="mb-4">
+                    <i class="fas fa-search me-2 text-info"></i>
+                    Búsqueda Rápida de Residentes
+                </h3>
+                <div class="input-group mb-4">
+                    <input type="text" class="form-control" placeholder="Buscar residente por nombre o ID...">
+                    <button class="btn btn-primary" type="button">
+                        <i class="fas fa-search"></i> Buscar
+                    </button>
+                </div>
+                
+                <h4 class="mb-3">Residentes Asignados</h4>
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <div class="mb-3">
+                                    <i class="fas fa-user-circle fa-4x text-secondary"></i>
+                                </div>
+                                <h5 class="card-title">Ana María Gómez</h5>
+                                <p class="card-text text-muted mb-1">78 años</p>
+                                <p class="card-text"><span class="badge bg-success">Estable</span></p>
+                                <a href="#" class="btn btn-sm btn-outline-primary w-100">Ver Detalle</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <div class="mb-3">
+                                    <i class="fas fa-user-circle fa-4x text-secondary"></i>
+                                </div>
+                                <h5 class="card-title">Juan Pérez López</h5>
+                                <p class="card-text text-muted mb-1">82 años</p>
+                                <p class="card-text"><span class="badge bg-warning">En observación</span></p>
+                                <a href="#" class="btn btn-sm btn-outline-primary w-100">Ver Detalle</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <div class="mb-3">
+                                    <i class="fas fa-user-circle fa-4x text-secondary"></i>
+                                </div>
+                                <h5 class="card-title">Carmen Rodríguez</h5>
+                                <p class="card-text text-muted mb-1">75 años</p>
+                                <p class="card-text"><span class="badge bg-success">Estable</span></p>
+                                <a href="#" class="btn btn-sm btn-outline-primary w-100">Ver Detalle</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body text-center">
+                                <div class="mb-3">
+                                    <i class="fas fa-user-circle fa-4x text-secondary"></i>
+                                </div>
+                                <h5 class="card-title">Roberto Sánchez</h5>
+                                <p class="card-text text-muted mb-1">80 años</p>
+                                <p class="card-text"><span class="badge bg-success">Estable</span></p>
+                                <a href="#" class="btn btn-sm btn-outline-primary w-100">Ver Detalle</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-end mt-3">
+                    <a href="#" class="btn btn-sm btn-outline-primary">
+                        Ver todos los residentes
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

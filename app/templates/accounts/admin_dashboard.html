@@ -1,0 +1,282 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Panel de Administración - Hogar Gerontológico New Hope{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="dashboard-header d-flex justify-content-between align-items-center">
+        <h2 class="mb-0">
+            <i class="fas fa-tachometer-alt me-2"></i>Panel de Administración
+        </h2>
+        <span class="badge bg-light text-dark">Administrador</span>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-3 mb-4">
+            <div class="dashboard-card text-center">
+                <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                <h3 class="h4">Residentes</h3>
+                <p class="display-4 fw-bold mb-0">45</p>
+                <p class="text-muted">Total de residentes</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="dashboard-card text-center">
+                <i class="fas fa-user-md fa-3x text-success mb-3"></i>
+                <h3 class="h4">Personal</h3>
+                <p class="display-4 fw-bold mb-0">18</p>
+                <p class="text-muted">Miembros del personal</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="dashboard-card text-center">
+                <i class="fas fa-pills fa-3x text-warning mb-3"></i>
+                <h3 class="h4">Medicamentos</h3>
+                <p class="display-4 fw-bold mb-0">120</p>
+                <p class="text-muted">Medicamentos activos</p>
+            </div>
+        </div>
+        <div class="col-md-3 mb-4">
+            <div class="dashboard-card text-center">
+                <i class="fas fa-calendar-check fa-3x text-info mb-3"></i>
+                <h3 class="h4">Actividades</h3>
+                <p class="display-4 fw-bold mb-0">8</p>
+                <p class="text-muted">Programadas hoy</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="dashboard-container">
+                <h3 class="mb-4">
+                    <i class="fas fa-bell me-2 text-warning"></i>
+                    Notificaciones Recientes
+                </h3>
+                <ul class="list-group">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="badge bg-danger me-2">Urgente</span>
+                            Revisión de medicamentos pendiente
+                        </div>
+                        <span class="text-muted small">Hace 2 horas</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="badge bg-primary me-2">Nuevo</span>
+                            Nuevo residente registrado
+                        </div>
+                        <span class="text-muted small">Hace 5 horas</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="badge bg-success me-2">Completado</span>
+                            Revisión médica mensual finalizada
+                        </div>
+                        <span class="text-muted small">Hace 1 día</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="badge bg-info me-2">Info</span>
+                            Actualización de sistema programada
+                        </div>
+                        <span class="text-muted small">Hace 2 días</span>
+                    </li>
+                </ul>
+                <div class="text-end mt-3">
+                    <a href="#" class="btn btn-sm btn-outline-primary">
+                        Ver todas las notificaciones
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="dashboard-container">
+                <h3 class="mb-4">
+                    <i class="fas fa-tasks me-2 text-primary"></i>
+                    Tareas Pendientes
+                </h3>
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="task1">
+                            <label class="form-check-label" for="task1">
+                                Revisar reporte mensual de medicamentos
+                            </label>
+                            <span class="badge bg-danger float-end">Urgente</span>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="task2">
+                            <label class="form-check-label" for="task2">
+                                Entrevistar al nuevo personal
+                            </label>
+                            <span class="badge bg-warning float-end">Alta</span>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="task3">
+                            <label class="form-check-label" for="task3">
+                                Actualizar horarios del personal
+                            </label>
+                            <span class="badge bg-info float-end">Media</span>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="task4">
+                            <label class="form-check-label" for="task4">
+                                Revisar solicitudes de familiares
+                            </label>
+                            <span class="badge bg-secondary float-end">Baja</span>
+                        </div>
+                    </li>
+                </ul>
+                <div class="text-end mt-3">
+                    <a href="#" class="btn btn-sm btn-outline-primary">
+                        Ver todas las tareas
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12 mb-4">
+            <div class="dashboard-container">
+                <h3 class="mb-4">
+                    <i class="fas fa-user-plus me-2 text-success"></i>
+                    Residentes Recientes
+                </h3>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nombre</th>
+                                <th>Edad</th>
+                                <th>Fecha de Ingreso</th>
+                                <th>Familiar Responsable</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>001</td>
+                                <td>Ana María Gómez</td>
+                                <td>78</td>
+                                <td>15/02/2025</td>
+                                <td>Carlos Gómez</td>
+                                <td><span class="badge bg-success">Activo</span></td>
+                                <td>
+                                    <a href="#" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>002</td>
+                                <td>Juan Pérez López</td>
+                                <td>82</td>
+                                <td>10/02/2025</td>
+                                <td>Laura Pérez</td>
+                                <td><span class="badge bg-success">Activo</span></td>
+                                <td>
+                                    <a href="#" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>003</td>
+                                <td>Carmen Rodríguez</td>
+                                <td>75</td>
+                                <td>05/02/2025</td>
+                                <td>Miguel Rodríguez</td>
+                                <td><span class="badge bg-warning">En observación</span></td>
+                                <td>
+                                    <a href="#" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="text-end mt-3">
+                    <a href="#" class="btn btn-sm btn-outline-primary">
+                        Ver todos los residentes
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="dashboard-container">
+                <h3 class="mb-4">
+                    <i class="fas fa-chart-line me-2 text-info"></i>
+                    Acciones Rápidas
+                </h3>
+                <div class="d-grid gap-3">
+                    <a href="#" class="btn btn-primary">
+                        <i class="fas fa-user-plus me-2"></i>Añadir Nuevo Residente
+                    </a>
+                    <a href="#" class="btn btn-success">
+                        <i class="fas fa-user-md me-2"></i>Gestionar Personal
+                    </a>
+                    <a href="#" class="btn btn-warning">
+                        <i class="fas fa-pills me-2"></i>Gestionar Medicamentos
+                    </a>
+                    <a href="#" class="btn btn-info">
+                        <i class="fas fa-file-alt me-2"></i>Generar Reportes
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="dashboard-container">
+                <h3 class="mb-4">
+                    <i class="fas fa-calendar-alt me-2 text-success"></i>
+                    Próximos Eventos
+                </h3>
+                <ul class="list-group">
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-1">Revisión Médica General</h5>
+                            <p class="mb-0 text-muted">28 de Febrero, 2025</p>
+                        </div>
+                        <span class="badge bg-primary rounded-pill">2 días</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-1">Celebración Cumpleaños</h5>
+                            <p class="mb-0 text-muted">3 de Marzo, 2025</p>
+                        </div>
+                        <span class="badge bg-primary rounded-pill">5 días</span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="mb-1">Reunión con Familiares</h5>
+                            <p class="mb-0 text-muted">10 de Marzo, 2025</p>
+                        </div>
+                        <span class="badge bg-primary rounded-pill">12 días</span>
+                    </li>
+                </ul>
+                <div class="text-end mt-3">
+                    <a href="#" class="btn btn-sm btn-outline-primary">
+                        Ver calendario completo
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

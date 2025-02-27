@@ -1,37 +1,55 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Lista de Medicamentos</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"> 
-</head>
-<body class="container mt-4">
-    <h1>Lista de Medicamentos</h1>
+{% extends 'base.html' %}
 
-    <a href="{% url 'medications:create_medication_view' %}" class="btn btn-success mb-3">Añadir Nuevo Medicamento</a>
+{% block title %}Lista de Medicamentos{% endblock %}
 
-    <ul class="list-group">
-        {% for medication in medications %}
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-                {{ medication.name }}
-                <div>
-                    <!-- Botón de Editar -->
-                    <a href="{% url 'medications:update_medication_view' medication.pk %}" class="btn btn-primary btn-sm me-2" title="Editar">
-                        <i class="bi bi-pencil"></i>
-                    </a>
-                    
-                    <!-- Botón de Eliminar -->
-                    <form action="{% url 'medications:delete_medication_view' medication.pk %}" method="POST" class="d-inline">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-danger btn-sm" title="Eliminar" onclick="return confirm('¿Estás seguro de que deseas eliminar este medicamento?');">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </form>
-                </div>
-            </li>
-        {% empty %}
-            <li class="list-group-item">No hay medicamentos registrados.</li>
-        {% endfor %}
-    </ul>
-</body>
-</html>
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h2 class="text-center">Lista de Medicamentos</h2>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-12 mb-4">
+            <a href="{% url 'medications:create_medication_view' %}" class="btn btn-success">
+                <i class="fas fa-plus me-2"></i>Añadir Nuevo Medicamento
+            </a>
+        </div>
+        
+        <div class="col-md-8 mx-auto">
+            <div class="content-card">
+                <ul class="list-group list-group-flush">
+                    {% for medication in medications %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                        <span class="fw-bold">
+                            <i class="fas fa-pills me-2 text-success"></i>
+                            {{ medication.name }}
+                        </span>
+                        <div>
+                            <!-- Botón de Editar -->
+                            <a href="{% url 'medications:update_medication_view' medication.pk %}" class="btn btn-primary btn-sm me-2" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            
+                            <!-- Botón de Eliminar -->
+                            <form action="{% url 'medications:delete_medication_view' medication.pk %}" method="POST" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm" title="Eliminar" 
+                                       onclick="return confirm('¿Estás seguro de que deseas eliminar este medicamento?');">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </li>
+                    {% empty %}
+                    <li class="list-group-item text-center py-4 text-muted">
+                        <i class="fas fa-info-circle me-2"></i>No hay medicamentos registrados.
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
