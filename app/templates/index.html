@@ -2,12 +2,1086 @@
 
 {% block title %}Hogar Gerontológico New Hope - Cuidado para adultos mayores{% endblock %}
 
+{% block extra_css %}
+<style>
+    /* Estilos generales */
+    :root {
+        --primary-green: #5BA85A;
+        --secondary-green: #438940;
+        --light-green: #E1F5E1;
+        --accent-green: #8BC34A;
+        --text-dark: #333333;
+        --text-light: #FFFFFF;
+        --accent-warm: #FFB74D;
+        --accent-soft: #FFE0B2;
+        --accent-blue: #64B5F6;
+    }
+    
+    .hero-section {
+        min-height: 500px;
+        display: flex;
+        align-items: center;
+        background: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('images/senior-home.jpg') center/cover;
+        border-radius: 0 0 30px 30px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .hero-section::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100" opacity="0.15"><circle cx="20" cy="20" r="15" fill="white"/><circle cx="80" cy="80" r="15" fill="white"/><circle cx="80" cy="20" r="10" fill="white"/><circle cx="20" cy="80" r="10" fill="white"/></svg>');
+        background-repeat: repeat;
+        pointer-events: none;
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        color: white;
+        text-align: center;
+    }
+    
+    /* Floating cards in hero section */
+    .floating-cards {
+        position: relative;
+        height: 400px;
+        margin-top: 20px;
+    }
+    
+    .dashboard-card {
+        position: absolute;
+        background-color: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        padding: 20px;
+        transition: all 0.3s;
+    }
+    
+    .dashboard-card-1 {
+        width: 280px;
+        height: 200px;
+        top: 20px;
+        left: 50px;
+        z-index: 3;
+        transform: rotate(-5deg);
+        border-left: 4px solid var(--accent-warm);
+    }
+    
+    .dashboard-card-2 {
+        width: 280px;
+        height: 180px;
+        top: 180px;
+        left: 150px;
+        z-index: 2;
+        transform: rotate(3deg);
+        border-left: 4px solid var(--accent-blue);
+    }
+    
+    .dashboard-card-3 {
+        width: 250px;
+        height: 160px;
+        top: 100px;
+        left: 220px;
+        z-index: 1;
+        transform: rotate(-2deg);
+        border-left: 4px solid var(--primary-green);
+    }
+    
+    .floating-cards:hover .dashboard-card {
+        transform: rotate(0);
+    }
+    
+    .dashboard-card h5 {
+        font-size: 1.2rem;
+        margin-bottom: 15px;
+        color: var(--text-dark);
+    }
+    
+    .dashboard-progress {
+        height: 8px;
+        border-radius: 4px;
+        margin-bottom: 15px;
+        background-color: #eee;
+    }
+    
+    .dashboard-progress-bar {
+        height: 100%;
+        border-radius: 4px;
+        background-color: var(--primary-green);
+    }
+    
+    .login-buttons {
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 30px;
+    }
+    
+    /* Sección de características principales */
+    .features-section {
+        background-color: white;
+        padding: 80px 0;
+        border-radius: 30px;
+        margin: 60px 0;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .feature-card {
+        background-color: white;
+        border-radius: 20px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        height: 100%;
+        transition: all 0.3s;
+        overflow: hidden;
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .feature-card .card-header {
+        padding: 20px;
+        text-align: center;
+        border-bottom: none;
+    }
+    
+    .bg-primary-green {
+        background-color: var(--primary-green);
+        color: white;
+    }
+    
+    .bg-accent-warm {
+        background-color: var(--accent-warm);
+        color: var(--text-dark);
+    }
+    
+    .bg-accent-blue {
+        background-color: var(--accent-blue);
+        color: white;
+    }
+    
+    .feature-icon {
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+        display: inline-block;
+    }
+    
+    .feature-card .card-body {
+        padding: 25px;
+    }
+    
+    .feature-list {
+        list-style-type: none;
+        padding-left: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .feature-list li {
+        margin-bottom: 0.75rem;
+        padding-left: 0.5rem;
+        border-left: 3px solid var(--light-green);
+        display: flex;
+        align-items: flex-start;
+    }
+    
+    .feature-list li i {
+        color: var(--primary-green);
+        margin-right: 10px;
+        margin-top: 5px;
+    }
+    
+    /* Estadísticas */
+    .stats-section {
+        background-color: var(--primary-green);
+        color: white;
+        padding: 60px 0;
+        border-radius: 30px;
+        margin: 60px 0;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .stats-section::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100" opacity="0.1"><circle cx="20" cy="20" r="15" fill="white"/><circle cx="80" cy="80" r="15" fill="white"/><circle cx="80" cy="20" r="10" fill="white"/><circle cx="20" cy="80" r="10" fill="white"/></svg>');
+    }
+    
+    .stat-card {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 25px;
+        text-align: center;
+        border: 2px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s;
+        height: 100%;
+    }
+    
+    .stat-card:hover {
+        background-color: rgba(255, 255, 255, 0.2);
+        transform: translateY(-5px);
+    }
+    
+    .stat-number {
+        font-size: 3rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+    
+    /* Sección de roles de usuario */
+    .user-roles-section {
+        background-color: white;
+        padding: 80px 0;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .user-roles-section::before {
+        content: '';
+        position: absolute;
+        width: 300px;
+        height: 300px;
+        background-color: rgba(91, 168, 90, 0.05);
+        border-radius: 50%;
+        top: -150px;
+        left: -150px;
+        z-index: 0;
+    }
+    
+    .user-roles-section::after {
+        content: '';
+        position: absolute;
+        width: 200px;
+        height: 200px;
+        background-color: rgba(255, 183, 77, 0.05);
+        border-radius: 50%;
+        bottom: -100px;
+        right: -100px;
+        z-index: 0;
+    }
+    
+    .role-card {
+        background-color: white;
+        border-radius: 20px;
+        padding: 30px;
+        height: 100%;
+        transition: all 0.3s ease;
+        position: relative;
+        z-index: 1;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        overflow: hidden;
+    }
+    
+    .doctor-card {
+        border-top: 5px solid var(--primary-green);
+    }
+    
+    .patient-card {
+        border-top: 5px solid var(--accent-blue);
+    }
+    
+    .family-card {
+        border-top: 5px solid var(--accent-warm);
+    }
+    
+    .role-card:hover {
+        transform: translateY(-15px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .role-icon-wrapper {
+        margin-bottom: 20px;
+        position: relative;
+        width: 100px;
+        height: 100px;
+    }
+    
+    .role-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 35px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 1;
+        transition: all 0.3s ease;
+    }
+    
+    .doctor-card .role-icon {
+        background-color: var(--primary-green);
+        color: white;
+    }
+    
+    .patient-card .role-icon {
+        background-color: var(--accent-blue);
+        color: white;
+    }
+    
+    .family-card .role-icon {
+        background-color: var(--accent-warm);
+        color: white;
+    }
+    
+    .role-icon-wrapper::before {
+        content: '';
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background-color: rgba(0, 0, 0, 0.05);
+        top: 10px;
+        left: 0;
+    }
+    
+    .role-card:hover .role-icon {
+        transform: scale(1.1);
+    }
+    
+    .role-title {
+        margin-bottom: 15px;
+        font-size: 1.5rem;
+        font-weight: 700;
+        position: relative;
+    }
+    
+    .role-description {
+        margin-bottom: 20px;
+        flex-grow: 1;
+    }
+    
+    .role-features {
+        width: 100%;
+        text-align: left;
+    }
+    
+    .role-features ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .role-features li {
+        margin-bottom: 12px;
+        display: flex;
+        align-items: flex-start;
+    }
+    
+    .role-features i {
+        color: var(--primary-green);
+        margin-right: 10px;
+        margin-top: 3px;
+        flex-shrink: 0;
+    }
+    
+    .doctor-card .role-features i {
+        color: var(--primary-green);
+    }
+    
+    .patient-card .role-features i {
+        color: var(--accent-blue);
+    }
+    
+    .family-card .role-features i {
+        color: var(--accent-warm);
+    }
+    
+    .signup-btn {
+        background: linear-gradient(45deg, var(--primary-green), var(--accent-green));
+        border: none;
+        color: white;
+        padding: 15px 30px;
+        border-radius: 50px;
+        box-shadow: 0 5px 15px rgba(91, 168, 90, 0.3);
+        transition: all 0.3s ease;
+    }
+    
+    .signup-btn:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(91, 168, 90, 0.4);
+        background: linear-gradient(45deg, var(--accent-green), var(--primary-green));
+    }
+    
+    /* Sección de testimonios */
+    .testimonials-section {
+        background: linear-gradient(135deg, var(--light-green) 0%, rgba(225, 245, 225, 0.7) 100%);
+        position: relative;
+        padding: 80px 0;
+        border-radius: 30px;
+        margin: 60px 0;
+    }
+    
+    .testimonials-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30" opacity="0.05"><path d="M15,3 L25,15 L15,27 L5,15 Z" fill="%235BA85A"/></svg>');
+        background-repeat: repeat;
+        pointer-events: none;
+    }
+    
+    .quote-marks {
+        height: 40px;
+        width: 40px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(255, 255, 255, 0.6);
+        border-radius: 50%;
+        margin: 0 15px;
+        vertical-align: middle;
+    }
+    
+    .testimonial-cards {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .testimonial-card {
+        background-color: white;
+        border-radius: 20px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        padding: 25px;
+        position: relative;
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+    
+    .testimonial-card::before {
+        content: '"';
+        position: absolute;
+        top: 5px;
+        left: 15px;
+        font-size: 80px;
+        line-height: 1;
+        font-family: serif;
+        color: rgba(91, 168, 90, 0.1);
+    }
+    
+    .testimonial-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .testimonial-content {
+        flex: 1;
+        padding: 10px 0 20px 0;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .testimony {
+        font-size: 1.1rem;
+        line-height: 1.6;
+        font-style: italic;
+        color: #555;
+        margin-bottom: 0;
+    }
+    
+    .testimonial-author {
+        display: flex;
+        align-items: center;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+        padding-top: 15px;
+    }
+    
+    .author-avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: var(--primary-green);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        margin-right: 15px;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .author-info {
+        flex: 1;
+    }
+    
+    .author-name {
+        margin: 0;
+        font-weight: 600;
+        font-size: 1.1rem;
+        color: var(--text-dark);
+    }
+    
+    .author-title {
+        margin: 0;
+        font-size: 0.9rem;
+        color: #777;
+    }
+    
+    .cta-container {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.97) 100%);
+        border: 1px solid rgba(91, 168, 90, 0.2);
+        position: relative;
+        z-index: 2;
+        border-radius: 20px;
+    }
+    
+    /* CTA Section */
+    .cta-section {
+        background-color: var(--primary-green);
+        padding: 80px 0;
+        color: white;
+        text-align: center;
+        border-radius: 30px;
+        margin: 60px 0;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .cta-section::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100" opacity="0.1"><circle cx="20" cy="20" r="15" fill="white"/><circle cx="80" cy="80" r="15" fill="white"/><circle cx="80" cy="20" r="10" fill="white"/><circle cx="20" cy="80" r="10" fill="white"/></svg>');
+        background-repeat: repeat;
+        pointer-events: none;
+    }
+    
+    /* Contact Section */
+    .contact-section {
+        background-color: white;
+        border-radius: 30px;
+        padding: 80px 0;
+        margin-bottom: 60px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+    
+    .contact-info {
+        background-color: var(--light-green);
+        padding: 30px;
+        border-radius: 20px;
+        height: 100%;
+        border-left: 5px solid var(--primary-green);
+    }
+    
+    .contact-hours {
+        background-color: var(--light-green);
+        padding: 30px;
+        border-radius: 20px;
+        border-left: 5px solid var(--accent-warm);
+    }
+    
+    .contact-form {
+        background-color: white;
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+    
+    .form-label {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--text-dark);
+    }
+    
+    .form-control {
+        border-radius: 15px;
+        padding: 12px 20px;
+        border: 2px solid #eeeeee;
+        margin-bottom: 20px;
+        font-size: 1rem;
+        transition: all 0.3s;
+    }
+    
+    .form-control:focus {
+        border-color: var(--primary-green);
+        box-shadow: 0 0 0 0.25rem rgba(91, 168, 90, 0.25);
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .floating-cards {
+            display: none;
+        }
+        
+        .hero-section {
+            text-align: center;
+        }
+        
+        .feature-card, .testimonial-card, .role-card {
+            margin-bottom: 30px;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <!-- Hero Section -->
 <section class="hero-section">
     <div class="container hero-content">
-        <h1 class="display-4">Bienvenidos a Hogar Gerontológico New Hope</h1>
-        <p class="lead">Un espacio donde nuestros adultos mayores reciben atención de calidad, calidez y respeto que merecen</p>
+        <div class="row align-items-center">
+            <div class="col-lg-7 text-lg-start text-center">
+                <h1 class="display-4 mb-3">Sistema de Gestión para Cuidado de Adultos Mayores</h1>
+                <p class="lead mb-4">Una solución completa para administrar residentes, medicamentos y dosis en el Hogar Gerontológico New Hope.</p>
+                
+                {% if user.is_authenticated %}
+                    <div class="login-buttons">
+                        <a href="{% url 'dashboard:index' %}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-tachometer-alt me-2"></i>Ir a Mi Panel
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="login-buttons">
+                        <a href="{% url 'authentication:login' %}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+                        </a>
+                        <a href="{% url 'authentication:signup' %}" class="btn btn-success btn-lg">
+                            <i class="fas fa-user-plus me-2"></i>Registrarse
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="col-lg-5 d-none d-lg-block">
+                <div class="floating-cards">
+                    <div class="dashboard-card dashboard-card-1">
+                        <h5><i class="fas fa-pills me-2"></i>Medicamentos</h5>
+                        <div class="dashboard-progress">
+                            <div class="dashboard-progress-bar" style="width: 85%"></div>
+                        </div>
+                        <p class="mb-1"><i class="fas fa-check-circle text-success me-2"></i>5 medicamentos activos</p>
+                        <p><i class="fas fa-bell text-warning me-2"></i>1 dosis pendiente</p>
+                    </div>
+                    <div class="dashboard-card dashboard-card-2">
+                        <h5><i class="fas fa-user-md me-2"></i>Panel del Doctor</h5>
+                        <p class="mb-1"><i class="fas fa-users me-2"></i>12 pacientes asignados</p>
+                        <p><i class="fas fa-clipboard-check me-2"></i>28 dosis esta semana</p>
+                    </div>
+                    <div class="dashboard-card dashboard-card-3">
+                        <h5><i class="fas fa-heartbeat me-2"></i>Estado del Paciente</h5>
+                        <p><i class="fas fa-chart-line text-success me-2"></i>Mejora progresiva</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="features-section">
+    <div class="container">
+        <h2 class="text-center mb-4" style="font-size: 2.5rem; color: var(--primary-green);">
+            <i class="fas fa-star me-2" style="color: var(--accent-warm);"></i>
+            Características Principales
+            <i class="fas fa-star ms-2" style="color: var(--accent-warm);"></i>
+        </h2>
+        <p class="text-center mb-5 fs-5">Nuestro sistema ofrece herramientas completas para la gestión eficiente del cuidado de adultos mayores</p>
+        
+        <!-- Primera fila de características -->
+        <div class="row mb-4">
+            <div class="col-lg-4 mb-4">
+                <div class="feature-card">
+                    <div class="card-header bg-primary-green">
+                        <div class="feature-icon">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <h3 class="card-title">Acceso Seguro por Roles</h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Sistema de autenticación robusto con roles específicos para:</p>
+                        <ul class="feature-list">
+                            <li><i class="fas fa-user-md"></i> <span>Doctores</span></li>
+                            <li><i class="fas fa-user"></i> <span>Pacientes</span></li>
+                            <li><i class="fas fa-users"></i> <span>Familiares</span></li>
+                        </ul>
+                        <p>Cada usuario cuenta con permisos personalizados según sus necesidades.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 mb-4">
+                <div class="feature-card">
+                    <div class="card-header bg-accent-warm">
+                        <div class="feature-icon">
+                            <i class="fas fa-pills"></i>
+                        </div>
+                        <h3 class="card-title">Control de Medicamentos</h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Gestión detallada de medicamentos con:</p>
+                        <ul class="feature-list">
+                            <li><i class="fas fa-clipboard-check"></i> <span>Registro de dosis</span></li>
+                            <li><i class="fas fa-calendar-alt"></i> <span>Programación de horarios</span></li>
+                            <li><i class="fas fa-chart-line"></i> <span>Seguimiento de tratamientos</span></li>
+                        </ul>
+                        <p>Garantizamos que cada residente reciba el tratamiento adecuado en el momento correcto.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 mb-4">
+                <div class="feature-card">
+                    <div class="card-header bg-accent-blue">
+                        <div class="feature-icon">
+                            <i class="fas fa-tachometer-alt"></i>
+                        </div>
+                        <h3 class="card-title">Dashboards Personalizados</h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Paneles adaptados a cada tipo de usuario con:</p>
+                        <ul class="feature-list">
+                            <li><i class="fas fa-chart-bar"></i> <span>Estadísticas relevantes</span></li>
+                            <li><i class="fas fa-bell"></i> <span>Alertas en tiempo real</span></li>
+                            <li><i class="fas fa-sync-alt"></i> <span>Actualizaciones automáticas</span></li>
+                        </ul>
+                        <p>Información vital presentada de forma clara y accesible para todos los usuarios.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Segunda fila de características -->
+        <div class="row">
+            <div class="col-lg-4 mb-4">
+                <div class="feature-card">
+                    <div class="card-header bg-primary-green">
+                        <div class="feature-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h3 class="card-title">Gestión de Residentes</h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Base de datos completa de residentes con:</p>
+                        <ul class="feature-list">
+                            <li><i class="fas fa-notes-medical"></i> <span>Historiales médicos</span></li>
+                            <li><i class="fas fa-heartbeat"></i> <span>Signos vitales</span></li>
+                            <li><i class="fas fa-utensils"></i> <span>Preferencias y necesidades</span></li>
+                        </ul>
+                        <p>Toda la información importante centralizada y de fácil acceso.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 mb-4">
+                <div class="feature-card">
+                    <div class="card-header bg-accent-warm">
+                        <div class="feature-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <h3 class="card-title">Sistema de Alertas</h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Notificaciones automáticas para:</p>
+                        <ul class="feature-list">
+                            <li><i class="fas fa-clock"></i> <span>Medicamentos pendientes</span></li>
+                            <li><i class="fas fa-exclamation-triangle"></i> <span>Cambios en estado de salud</span></li>
+                            <li><i class="fas fa-calendar-check"></i> <span>Recordatorios importantes</span></li>
+                        </ul>
+                        <p>Nunca se perderá información vital para el cuidado de los residentes.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-lg-4 mb-4">
+                <div class="feature-card">
+                    <div class="card-header bg-accent-blue">
+                        <div class="feature-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h3 class="card-title">Diseño Responsivo</h3>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">Interfaz adaptada a cualquier dispositivo:</p>
+                        <ul class="feature-list">
+                            <li><i class="fas fa-laptop"></i> <span>Computadoras</span></li>
+                            <li><i class="fas fa-tablet-alt"></i> <span>Tablets</span></li>
+                            <li><i class="fas fa-mobile-alt"></i> <span>Teléfonos móviles</span></li>
+                        </ul>
+                        <p>Acceda al sistema desde cualquier lugar y en cualquier momento.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Section -->
+<section class="stats-section">
+    <div class="container" style="position: relative; z-index: 1;">
+        <h2 class="text-center mb-5 text-white">El Impacto de Nuestra Plataforma</h2>
+        
+        <div class="row text-center">
+            <div class="col-md-3 mb-4">
+                <div class="stat-card">
+                    <div class="stat-number">98%</div>
+                    <div class="stat-title">Precisión en medicación</div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 mb-4">
+                <div class="stat-card">
+                    <div class="stat-number">30%</div>
+                    <div class="stat-title">Reducción de errores</div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 mb-4">
+                <div class="stat-card">
+                    <div class="stat-number">45%</div>
+                    <div class="stat-title">Mejora en comunicación</div>
+                </div>
+            </div>
+            
+            <div class="col-md-3 mb-4">
+                <div class="stat-card">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-title">Disponibilidad</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- User Roles Section -->
+<section id="roles" class="user-roles-section">
+    <div class="container">
+        <h2 class="text-center mb-4" style="font-size: 2.5rem; color: var(--primary-green);">
+            <i class="fas fa-users-cog me-2" style="color: var(--accent-warm);"></i>
+            Soluciones Para Cada Tipo de Usuario
+        </h2>
+        <p class="text-center mb-5 fs-5">Nuestro sistema ofrece funcionalidades específicas según las necesidades de cada rol</p>
+        
+        <div class="row">
+            <!-- Rol de Doctor -->
+            <div class="col-lg-4 mb-4">
+                <div class="role-card doctor-card">
+                    <div class="role-icon-wrapper">
+                        <div class="role-icon">
+                            <i class="fas fa-user-md"></i>
+                        </div>
+                    </div>
+                    <h3 class="role-title">Doctores</h3>
+                    <div class="role-description">
+                        <p>Panel completo para gestionar la atención médica de los residentes con herramientas especializadas.</p>
+                    </div>
+                    <div class="role-features">
+                        <ul>
+                            <li>
+                                <i class="fas fa-check-circle"></i>
+                                <span>Acceso a historiales médicos completos</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-check-circle"></i>
+                                <span>Gestión de medicamentos y dosis</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-check-circle"></i>
+                                <span>Seguimiento de tratamientos y progreso</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-check-circle"></i>
+                                <span>Alertas sobre cambios en el estado de salud</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Rol de Paciente -->
+            <div class="col-lg-4 mb-4">
+                <div class="role-card patient-card">
+                    <div class="role-icon-wrapper">
+                        <div class="role-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    <h3 class="role-title">Pacientes</h3>
+                    <div class="role-description">
+                        <p>Interfaz amigable que les permite estar al tanto de sus cuidados médicos y actividades diarias.</p>
+                    </div>
+                    <div class="role-features">
+                        <ul>
+                            <li>
+                                <i class="fas fa-check-circle"></i>
+                                <span>Vista clara de medicamentos y horarios</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-check-circle"></i>
+                                <span>Recordatorios de dosis y tratamientos</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-check-circle"></i>
+                                <span>Comunicación directa con el personal médico</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-check-circle"></i>
+                                <span>Programación de actividades y terapias</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Rol de Familiar -->
+            <div class="col-lg-4 mb-4">
+                <div class="role-card family-card">
+                    <div class="role-icon-wrapper">
+                        <div class="role-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                    <h3 class="role-title">Familiares</h3>
+                    <div class="role-description">
+                        <p>Seguimiento del cuidado de sus seres queridos, manteniéndose informados sobre su bienestar.</p>
+                    </div>
+                    <div class="role-features">
+                        <ul>
+                            <li>
+                                <i class="fas fa-check-circle"></i>
+                                <span>Monitoreo del estado de salud en tiempo real</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-check-circle"></i>
+                                <span>Historial de medicamentos y tratamientos</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-check-circle"></i>
+                                <span>Notificaciones sobre eventos importantes</span>
+                            </li>
+                            <li>
+                                <i class="fas fa-check-circle"></i>
+                                <span>Comunicación directa con el equipo médico</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Botón de registro -->
+        <div class="text-center mt-4">
+            <a href="{% url 'authentication:signup' %}" class="btn btn-lg signup-btn">
+                <i class="fas fa-user-plus me-2"></i>Registrarse como usuario
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section id="testimonials" class="testimonials-section">
+    <div class="container">
+        <div class="section-header text-center mb-5">
+            <div class="quote-marks d-inline-block">
+                <i class="fas fa-quote-left fa-2x" style="color: var(--accent-warm);"></i>
+            </div>
+            <h2 class="display-5 fw-bold my-3" style="color: var(--primary-green);">
+                Experiencias de Nuestros Usuarios
+            </h2>
+            <div class="quote-marks d-inline-block">
+                <i class="fas fa-quote-right fa-2x" style="color: var(--accent-warm);"></i>
+            </div>
+        </div>
+        
+        <div class="row testimonial-cards">
+            <!-- Testimonio del Doctor -->
+            <div class="col-lg-4 mb-4">
+                <div class="testimonial-card h-100">
+                    <div class="testimonial-content">
+                        <p class="testimony">"Como médico, este sistema ha transformado la forma en que gestiono los tratamientos. Puedo ver en tiempo real el estado de todos mis pacientes."</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <i class="fas fa-user-md"></i>
+                        </div>
+                        <div class="author-info">
+                            <h5 class="author-name">Dr. Alejandro Méndez</h5>
+                            <p class="author-title">Médico geriatra</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Testimonio del Paciente -->
+            <div class="col-lg-4 mb-4">
+                <div class="testimonial-card h-100">
+                    <div class="testimonial-content">
+                        <p class="testimony">"La aplicación me ayuda a recordar mis medicamentos y me mantiene conectado con mi médico. Es muy fácil de usar incluso para alguien de mi edad."</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="author-info">
+                            <h5 class="author-name">Roberto Gómez</h5>
+                            <p class="author-title">Residente, 78 años</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Testimonio del Familiar -->
+            <div class="col-lg-4 mb-4">
+                <div class="testimonial-card h-100">
+                    <div class="testimonial-content">
+                        <p class="testimony">"Ahora puedo estar tranquila sabiendo exactamente qué medicamentos toma mi madre y cuándo. La comunicación con los médicos ha mejorado enormemente."</p>
+                    </div>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="author-info">
+                            <h5 class="author-name">María González</h5>
+                            <p class="author-title">Familiar de residente</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- CTA Section dentro de la sección de testimonios -->
+        <div class="cta-container text-center mt-5 p-4 rounded-4">
+            <h3 class="mb-4" style="color: var(--primary-green);">Comience a Utilizar Nuestro Sistema Hoy</h3>
+            <p class="lead mb-4">Únase a las familias y profesionales que ya están mejorando la calidad de vida de nuestros adultos mayores</p>
+            
+            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                <a href="{% url 'authentication:login' %}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
+                </a>
+                <a href="{% url 'authentication:signup' %}" class="btn btn-success btn-lg">
+                    <i class="fas fa-user-plus me-2"></i>Registrarse
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container" style="position: relative; z-index: 1;">
+        <h2 class="mb-4" style="font-size: 2.5rem;">Ofrecemos Un Lugar Seguro y Acogedor</h2>
+        <p class="lead mb-5">Permítanos ser parte del cuidado y bienestar de su ser querido</p>
         
         {% if user.is_authenticated %}
             <a href="{% url 'dashboard:index' %}" class="btn btn-primary btn-lg">
@@ -26,113 +1100,65 @@
     </div>
 </section>
 
-<!-- Features Section -->
-<section id="services" class="features-section">
-    <div class="container">
-        <h2 class="text-center mb-5" style="font-size: 2.5rem; color: var(--primary-green);">
-            <i class="fas fa-star me-2" style="color: var(--accent-warm);"></i>
-            Nuestros Servicios
-            <i class="fas fa-star ms-2" style="color: var(--accent-warm);"></i>
-        </h2>
-        <div class="row">
-            <div class="col-md-4">
-                <div class="feature-card">
-                    <div class="icon-box">
-                        <i class="fas fa-heartbeat"></i>
-                    </div>
-                    <h3 class="text-center mb-3">Atención Médica</h3>
-                    <p class="text-center fs-5">Contamos con profesionales de la salud capacitados para brindar atención médica especializada las 24 horas.</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="feature-card">
-                    <div class="icon-box">
-                        <i class="fas fa-utensils"></i>
-                    </div>
-                    <h3 class="text-center mb-3">Alimentación Balanceada</h3>
-                    <p class="text-center fs-5">Ofrecemos dietas personalizadas supervisadas por nutricionistas para garantizar una alimentación saludable.</p>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="feature-card">
-                    <div class="icon-box">
-                        <i class="fas fa-gamepad"></i>
-                    </div>
-                    <h3 class="text-center mb-3">Actividades Recreativas</h3>
-                    <p class="text-center fs-5">Desarrollamos programas de actividades físicas, cognitivas y sociales para mantener activos a nuestros residentes.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- CTA Section -->
-<section id="about" class="cta-section">
-    <div class="container" style="position: relative; z-index: 1;">
-        <h2 class="mb-4" style="font-size: 2.5rem;">Ofrecemos Un Lugar Seguro y Acogedor</h2>
-        <p class="lead mb-5">Permítanos ser parte del cuidado y bienestar de su ser querido</p>
-        
-        {% if user.is_authenticated %}
-            <a href="{% url 'dashboard:index' %}" class="btn btn-primary btn-lg">
-                <i class="fas fa-tachometer-alt me-2"></i>Ir a Mi Panel
-            </a>
-        {% else %}
-            <a href="{% url 'authentication:signup' %}" class="btn btn-primary btn-lg">
-                <i class="fas fa-user-plus me-2"></i>Regístrese Ahora
-            </a>
-        {% endif %}
-    </div>
-</section>
-
 <!-- Contact Section -->
 <section id="contact" class="contact-section">
     <div class="container">
         <h2 class="text-center mb-5" style="font-size: 2.5rem; color: var(--primary-green);">
             <i class="fas fa-envelope-open-text me-2" style="color: var(--accent-warm);"></i>
-            Contáctenos
+            ¿Necesita Más Información?
         </h2>
         <div class="row">
-            <div class="col-md-6">
-                <div class="contact-info">
+            <div class="col-md-5 mb-4">
+                <div class="contact-info mb-4">
                     <h3 style="color: var(--primary-green);">
                         <i class="fas fa-address-card me-2"></i>Información de Contacto
                     </h3>
-                    <p class="fs-5"><i class="fas fa-map-marker-alt me-2"></i> Av. Principal #123, Ciudad</p>
-                    <p class="fs-5"><i class="fas fa-phone me-2"></i> +123 456 7890</p>
-                    <p class="fs-5"><i class="fas fa-envelope me-2"></i> info@hogarnewhope.com</p>
+                    <p class="fs-5 mt-4"><i class="fas fa-map-marker-alt me-3"></i> Av. Principal #123, Ciudad</p>
+                    <p class="fs-5"><i class="fas fa-phone me-3"></i> +123 456 7890</p>
+                    <p class="fs-5"><i class="fas fa-envelope me-3"></i> info@hogarnewhope.com</p>
                 </div>
-                <div class="contact-hours mt-4">
+                <div class="contact-hours">
                     <h3 style="color: var(--primary-green);">
-                        <i class="fas fa-clock me-2"></i>Horario de Visitas
+                        <i class="fas fa-clock me-2"></i>Horario de Atención
                     </h3>
-                    <p class="fs-5"><i class="fas fa-calendar-day me-2"></i> Lunes a Viernes: 9:00 AM - 7:00 PM</p>
-                    <p class="fs-5"><i class="fas fa-calendar-day me-2"></i> Sábados y Domingos: 10:00 AM - 5:00 PM</p>
+                    <p class="fs-5 mt-4"><i class="fas fa-calendar-day me-3"></i> Lunes a Viernes: 9:00 AM - 7:00 PM</p>
+                    <p class="fs-5"><i class="fas fa-calendar-day me-3"></i> Sábados y Domingos: 10:00 AM - 5:00 PM</p>
                 </div>
             </div>
-            <div class="col-md-6">
-                <form class="p-4 bg-white rounded-4 shadow">
-                    <div class="mb-3">
-                        <label for="nombre" class="form-label fw-bold">Nombre Completo</label>
-                        <input type="text" class="form-control" id="nombre" placeholder="Ingrese su nombre">
-                    </div>
-                    <div class="mb-3">
-                        <label for="email" class="form-label fw-bold">Correo Electrónico</label>
-                        <input type="email" class="form-control" id="email" placeholder="ejemplo@correo.com">
-                    </div>
-                    <div class="mb-3">
-                        <label for="telefono" class="form-label fw-bold">Teléfono</label>
-                        <input type="tel" class="form-control" id="telefono" placeholder="123-456-7890">
-                    </div>
-                    <div class="mb-3">
-                        <label for="mensaje" class="form-label fw-bold">Mensaje</label>
-                        <textarea class="form-control" id="mensaje" rows="5" placeholder="¿Cómo podemos ayudarle?"></textarea>
-                    </div>
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-primary">
+            <div class="col-md-7">
+                <div class="contact-form">
+                    <form>
+                        <div class="mb-3">
+                            <label for="nombre" class="form-label">Nombre Completo</label>
+                            <input type="text" class="form-control" id="nombre" placeholder="Ingrese su nombre">
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Correo Electrónico</label>
+                            <input type="email" class="form-control" id="email" placeholder="ejemplo@correo.com">
+                        </div>
+                        <div class="mb-3">
+                            <label for="telefono" class="form-label">Teléfono</label>
+                            <input type="tel" class="form-control" id="telefono" placeholder="123-456-7890">
+                        </div>
+                        <div class="mb-3">
+                            <label for="tipo_usuario" class="form-label">Me interesa acceso como</label>
+                            <select class="form-control" id="tipo_usuario">
+                                <option value="">Seleccione una opción</option>
+                                <option value="doctor">Doctor/Personal médico</option>
+                                <option value="patient">Residente/Paciente</option>
+                                <option value="family">Familiar</option>
+                                <option value="other">Otro</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="mensaje" class="form-label">Mensaje</label>
+                            <textarea class="form-control" id="mensaje" rows="5" placeholder="¿Cómo podemos ayudarle?"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
                             <i class="fas fa-paper-plane me-2"></i>Enviar Mensaje
                         </button>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

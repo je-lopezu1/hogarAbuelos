@@ -67,32 +67,40 @@ class UserSignupForm(UserCreationForm):
         })
     )
     
-    resident = forms.ModelChoiceField(
-        queryset=Resident.objects.all(),
-        required=False,
-        widget=forms.Select(attrs={
-            'class': 'form-control',
-            'id': 'resident-field'
-        })
-    )
-    
-    related_residents = forms.ModelMultipleChoiceField(
-        queryset=Resident.objects.all(),
-        required=False,
-        widget=forms.SelectMultiple(attrs={
-            'class': 'form-control',
-            'id': 'related-residents-field'
-        })
-    )
-    
-    patients = forms.ModelMultipleChoiceField(
-        queryset=Resident.objects.all(),
-        required=False,
-        widget=forms.SelectMultiple(attrs={
-            'class': 'form-control',
-            'id': 'patients-field'
-        })
-    )
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        # Filtrar residentes que ya están asignados a un usuario como paciente
+        assigned_residents = UserProfile.objects.filter(resident__isnull=False).values_list('resident_id', flat=True)
+        
+        # Actualizar los querysets para los campos de residentes
+        self.fields['resident'] = forms.ModelChoiceField(
+            queryset=Resident.objects.exclude(id__in=assigned_residents),
+            required=False,
+            widget=forms.Select(attrs={
+                'class': 'form-control',
+                'id': 'resident-field'
+            })
+        )
+        
+        # Para los otros tipos de relaciones con residentes, mostramos todos
+        self.fields['related_residents'] = forms.ModelMultipleChoiceField(
+            queryset=Resident.objects.all(),
+            required=False,
+            widget=forms.SelectMultiple(attrs={
+                'class': 'form-control',
+                'id': 'related-residents-field'
+            })
+        )
+        
+        self.fields['patients'] = forms.ModelMultipleChoiceField(
+            queryset=Resident.objects.all(),
+            required=False,
+            widget=forms.SelectMultiple(attrs={
+                'class': 'form-control',
+                'id': 'patients-field'
+            })
+        )
     
     class Meta:
         model = User
@@ -102,3 +110,19 @@ class UserSignupForm(UserCreationForm):
             'password1': forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Contraseña'}),
             'password2': forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Confirmar contraseña'}),
         }
+        
+    def clean(self):
+        cleaned_data = super().clean()
+        user_type = cleaned_data.get("user_type")
+        resident = cleaned_data.get("resident")
+        
+        # Validar que un paciente tenga un residente seleccionado
+        if user_type == 'patient' and not resident:
+            self.add_error('resident', 'Para un usuario tipo Paciente, debe seleccionar un perfil de residente.')
+            
+        # Validar que el residente seleccionado no esté ya asignado
+        if resident:
+            if UserProfile.objects.filter(resident=resident).exists():
+                self.add_error('resident', f'El residente {resident.name} ya está asignado a otro usuario.')
+                
+        return cleaned_data

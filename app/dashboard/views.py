@@ -43,10 +43,10 @@ def doctor_dashboard(request, profile):
     
     top_medications = sorted(medications_count.items(), key=lambda x: x[1], reverse=True)[:5]
     
-    # Obtener dosis recientes
+    # Obtener dosis recientes - ordenadas por día y hora en lugar de created_at
     recent_doses = MedicationDose.objects.filter(
         resident__in=patients
-    ).order_by('-created_at')[:10]
+    ).order_by('-day', '-time')[:10]
     
     # Alertas (pacientes sin dosis recientes, por ejemplo)
     today = timezone.now().date()
@@ -54,10 +54,10 @@ def doctor_dashboard(request, profile):
     
     alerts = []
     for patient in patients:
-        # Pacientes sin dosis recientes
+        # Pacientes sin dosis recientes (última semana)
         recent_patient_doses = MedicationDose.objects.filter(
             resident=patient, 
-            created_at__gte=week_ago
+            day__gte=week_ago
         ).exists()
         
         if not recent_patient_doses:
@@ -89,18 +89,22 @@ def patient_dashboard(request, profile):
     # Obtener medicamentos del residente
     medications = resident.medications.all()
     
-    # Obtener dosis recientes
-    recent_doses = MedicationDose.objects.filter(resident=resident).order_by('-created_at')[:10]
+    # Obtener dosis recientes - ordenadas por día y hora
+    recent_doses = MedicationDose.objects.filter(resident=resident).order_by('-day', '-time')[:10]
     
-    # Calculamos próximas dosis basadas en la última dosis de cada medicamento
-    medication_doses = {}
+    # En lugar de usar un diccionario y el filtro get_item, creamos una lista de tuplas
+    # con el medicamento y su última dosis
+    medication_with_last_doses = []
     for medication in medications:
         last_dose = MedicationDose.objects.filter(
             resident=resident,
             medication=medication
-        ).order_by('-created_at').first()
+        ).order_by('-day', '-time').first()
         
-        medication_doses[medication.id] = last_dose
+        medication_with_last_doses.append({
+            'medication': medication,
+            'last_dose': last_dose
+        })
     
     # Médicos asignados
     doctors = resident.doctors.all()
@@ -110,7 +114,7 @@ def patient_dashboard(request, profile):
         'resident': resident,
         'medications': medications,
         'recent_doses': recent_doses,
-        'medication_doses': medication_doses,
+        'medication_with_last_doses': medication_with_last_doses,
         'doctors': doctors
     }
     
@@ -137,8 +141,8 @@ def family_dashboard(request, profile):
     # Obtener medicamentos del residente
     medications = selected_resident.medications.all()
     
-    # Obtener dosis recientes
-    recent_doses = MedicationDose.objects.filter(resident=selected_resident).order_by('-created_at')[:10]
+    # Obtener dosis recientes - ordenadas por día y hora
+    recent_doses = MedicationDose.objects.filter(resident=selected_resident).order_by('-day', '-time')[:10]
     
     # Médicos asignados
     doctors = selected_resident.doctors.all()
