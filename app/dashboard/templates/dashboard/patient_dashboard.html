@@ -14,29 +14,29 @@
         height: 100%;
         border-left: 4px solid var(--accent-blue);
     }
-    
+
     .stat-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
     }
-    
+
     .stat-card .stat-icon {
         font-size: 2.5rem;
         color: var(--accent-blue);
         margin-bottom: 15px;
     }
-    
+
     .stat-card .stat-value {
         font-size: 2rem;
         font-weight: 700;
         color: var(--text-dark);
     }
-    
+
     .stat-card .stat-title {
         font-size: 1.1rem;
         color: #757575;
     }
-    
+
     .medication-card {
         background-color: white;
         border-radius: 15px;
@@ -46,26 +46,26 @@
         transition: all 0.3s;
         border-left: 4px solid var(--primary-green);
     }
-    
+
     .medication-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
     }
-    
+
     .recent-item {
         padding: 15px;
         border-bottom: 1px solid #f0f0f0;
         transition: background-color 0.3s;
     }
-    
+
     .recent-item:hover {
         background-color: var(--light-green);
     }
-    
+
     .recent-item:last-child {
         border-bottom: none;
     }
-    
+
     .panel-title {
         font-size: 1.3rem;
         font-weight: 600;
@@ -109,20 +109,6 @@
                     <div class="col-md-4 fw-bold">Condición médica:</div>
                     <div class="col-md-8">{{ resident.medical_condition }}</div>
                 </div>
-                <div class="row mb-3">
-                    <div class="col-md-4 fw-bold">Médicos asignados:</div>
-                    <div class="col-md-8">
-                        {% if doctors %}
-                            <ul class="list-unstyled">
-                                {% for doctor in doctors %}
-                                    <li><i class="fas fa-user-md me-2 text-primary"></i>Dr./Dra. {{ doctor.user.get_full_name }}</li>
-                                {% endfor %}
-                            </ul>
-                        {% else %}
-                            <span class="text-muted">No hay médicos asignados actualmente.</span>
-                        {% endif %}
-                    </div>
-                </div>
             </div>
             <div class="col-md-3 text-center">
                 <div class="bg-light p-3 rounded-circle d-inline-block mb-3">
@@ -133,7 +119,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Estadísticas rápidas -->
     <div class="row mb-4">
         <div class="col-md-6 mb-4">
@@ -145,7 +131,7 @@
                 <div class="stat-title">Medicamentos actuales</div>
             </div>
         </div>
-        
+
         <div class="col-md-6 mb-4">
             <div class="stat-card">
                 <div class="stat-icon">
@@ -156,7 +142,7 @@
             </div>
         </div>
     </div>
-    
+
     <div class="row">
         <!-- Lista de medicamentos -->
 <!-- Lista de medicamentos -->
@@ -165,7 +151,7 @@
         <h3 class="panel-title">
             <i class="fas fa-prescription-bottle-alt me-2"></i>Mis Medicamentos
         </h3>
-        
+
         {% if medication_with_last_doses %}
         <div class="medications-list">
             {% for item in medication_with_last_doses %}
@@ -173,7 +159,7 @@
                 <h5>
                     <i class="fas fa-capsules me-2 text-success"></i>{{ item.medication.name }}
                 </h5>
-                
+
                 {% if item.last_dose %}
                 <p class="mb-1">
                     <i class="fas fa-clock me-2 text-primary"></i>
@@ -203,7 +189,7 @@
         <h3 class="panel-title">
             <i class="fas fa-history me-2"></i>Historial de Dosis
         </h3>
-        
+
         {% if recent_doses %}
         <div class="recent-doses-list">
             {% for dose in recent_doses %}

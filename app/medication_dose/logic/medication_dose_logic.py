@@ -4,7 +4,7 @@ from medications.models import Medication
 from medication_dose.models import MedicationDose
 
 def get_all_resident_medication_doses(resident):
-    return MedicationDose.objects.filter(resident=resident)
+    return MedicationDose.objects.filter(resident=resident).order_by('-day', '-time') # Ordering doses here
 
 def create_medication_dose(medication_dose_data):
     resident = medication_dose_data.get("resident")
@@ -33,5 +33,3 @@ def create_medication_dose(medication_dose_data):
 
 def delete_medication_dose(medication_dose_id):
     MedicationDose.objects.get(id=medication_dose_id).delete()
-
-

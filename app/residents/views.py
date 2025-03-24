@@ -21,7 +21,7 @@ def create_resident_view(request):
             return redirect('residents:residents_view')
     else:
         form = ResidentForm()
-    
+
     return render(request, 'create_resident.html', {'form': form})
 
 def delete_resident_view(request, pk):
@@ -40,10 +40,10 @@ def update_resident_view(request, pk):
             return redirect('residents:residents_view')
     else:
         form = ResidentForm(instance=resident)
-    
+
     return render(request, 'update_resident.html', {'form': form})
 
 def resident_doses_view(request, resident_pk):
     resident = get_object_or_404(Resident, pk=resident_pk)
-    doses = rl.get_all_resident_medication_doses(resident)
+    doses = rl.get_all_resident_medication_doses(resident).order_by('-day', '-time') # Ordering doses here
     return render(request, 'resident_doses.html', {'resident': resident, 'doses': doses})

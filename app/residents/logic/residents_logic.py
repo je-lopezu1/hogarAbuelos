@@ -8,7 +8,7 @@ def create_resident(resident_data):
     resident = Resident.objects.create(name=resident_data['name'],
                             age=resident_data['age'],
                             medical_condition=resident_data['medical_condition'])
-    
+
     resident.medications.set(resident_data['medications'])
     return resident
 
@@ -24,6 +24,5 @@ def update_resident(resident_id, resident_data):
     resident.save()
 
 def get_all_resident_medication_doses(resident):
-    doses = MedicationDose.objects.filter(resident=resident)
+    doses = MedicationDose.objects.filter(resident=resident).order_by('-day', '-time') # Ordering doses here
     return doses
-    
