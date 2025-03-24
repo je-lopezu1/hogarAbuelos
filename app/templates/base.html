@@ -375,15 +375,24 @@
                             </a>
                         </li>
                         {% endif %}
+
+                        {% if user.profile.is_doctor %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'authentication:create' %}">
+                                <i class="fas fa-pills me-2"></i>Registrar Usuario
+                            </a>
+                        </li>
+                        {% endif %}
+
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="#services">
+                            <a class="nav-link" href="#features">
                                 <i class="fas fa-hand-holding-heart me-2"></i>Servicios
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#about">
-                                <i class="fas fa-info-circle me-2"></i>Nosotros
+                            <a class="nav-link" href="#testimonials">
+                                <i class="fas fa-info-circle me-2"></i>Testimonios
                             </a>
                         </li>
                         <li class="nav-item">
@@ -417,11 +426,6 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'authentication:login' %}">
                             <i class="fas fa-sign-in-alt me-2"></i>Ingresar
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'authentication:signup' %}">
-                            <i class="fas fa-user-plus me-2"></i>Registrarse
                         </a>
                     </li>
                     {% endif %}

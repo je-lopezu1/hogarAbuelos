@@ -658,9 +658,6 @@
                         <a href="{% url 'authentication:login' %}" class="btn btn-primary btn-lg">
                             <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
                         </a>
-                        <a href="{% url 'authentication:signup' %}" class="btn btn-success btn-lg">
-                            <i class="fas fa-user-plus me-2"></i>Registrarse
-                        </a>
                     </div>
                 {% endif %}
             </div>
@@ -979,13 +976,6 @@
                 </div>
             </div>
         </div>
-        
-        <!-- Botón de registro -->
-        <div class="text-center mt-4">
-            <a href="{% url 'authentication:signup' %}" class="btn btn-lg signup-btn">
-                <i class="fas fa-user-plus me-2"></i>Registrarse como usuario
-            </a>
-        </div>
     </div>
 </section>
 
@@ -1059,21 +1049,6 @@
                 </div>
             </div>
         </div>
-        
-        <!-- CTA Section dentro de la sección de testimonios -->
-        <div class="cta-container text-center mt-5 p-4 rounded-4">
-            <h3 class="mb-4" style="color: var(--primary-green);">Comience a Utilizar Nuestro Sistema Hoy</h3>
-            <p class="lead mb-4">Únase a las familias y profesionales que ya están mejorando la calidad de vida de nuestros adultos mayores</p>
-            
-            <div class="d-flex justify-content-center gap-3 flex-wrap">
-                <a href="{% url 'authentication:login' %}" class="btn btn-primary btn-lg">
-                    <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
-                </a>
-                <a href="{% url 'authentication:signup' %}" class="btn btn-success btn-lg">
-                    <i class="fas fa-user-plus me-2"></i>Registrarse
-                </a>
-            </div>
-        </div>
     </div>
 </section>
 
@@ -1091,9 +1066,6 @@
             <div class="d-flex justify-content-center gap-3 flex-wrap">
                 <a href="{% url 'authentication:login' %}" class="btn btn-primary btn-lg">
                     <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
-                </a>
-                <a href="{% url 'authentication:signup' %}" class="btn btn-success btn-lg">
-                    <i class="fas fa-user-plus me-2"></i>Registrarse
                 </a>
             </div>
         {% endif %}
@@ -1116,8 +1088,10 @@
                     <p class="fs-5 mt-4"><i class="fas fa-map-marker-alt me-3"></i> Av. Principal #123, Ciudad</p>
                     <p class="fs-5"><i class="fas fa-phone me-3"></i> +123 456 7890</p>
                     <p class="fs-5"><i class="fas fa-envelope me-3"></i> info@hogarnewhope.com</p>
-                </div>
-                <div class="contact-hours">
+                
+                    <!-- Espacio para separar infroacion de horarios -->
+                    <div style="height: 80px;"></div>
+
                     <h3 style="color: var(--primary-green);">
                         <i class="fas fa-clock me-2"></i>Horario de Atención
                     </h3>

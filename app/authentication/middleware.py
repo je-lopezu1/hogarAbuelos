@@ -12,7 +12,6 @@ class RoleBasedAccessMiddleware(MiddlewareMixin):
     PUBLIC_URLS = [
         'index',
         'authentication:login',
-        'authentication:signup',
         'authentication:logout',
     ]
     
@@ -26,6 +25,7 @@ class RoleBasedAccessMiddleware(MiddlewareMixin):
         'medications:create_medication_view': ['doctor'],
         'medications:update_medication_view': ['doctor'],
         'medications:delete_medication_view': ['doctor'],
+        'authentication:signup': ['doctor'],
     }
     
     def process_request(self, request):
