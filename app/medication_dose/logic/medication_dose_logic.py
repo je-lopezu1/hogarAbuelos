@@ -33,3 +33,13 @@ def create_medication_dose(medication_dose_data):
 
 def delete_medication_dose(medication_dose_id):
     MedicationDose.objects.get(id=medication_dose_id).delete()
+
+def get_medication_dose(medication_dose_id):
+    return MedicationDose.objects.get(id=medication_dose_id)
+
+def update_medication_dose(medication_dose_id, medication_dose_data):
+    medication_dose = get_medication_dose(medication_dose_id)
+    medication_dose.medication = medication_dose_data.get("medication")
+    medication_dose.dose = medication_dose_data.get("dose")
+    medication_dose.save()
+    print(get_medication_dose(medication_dose_id).medication.name)

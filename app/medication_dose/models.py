@@ -27,8 +27,8 @@ class MedicationDose(models.Model):
 
     def save(self, *args, **kwargs):
         # Si hay un medicamento asociado, guarda su nombre
-        if self.medication and not self.medication_name:  
-            self.medication_name = self.medication.name  # Guarda el nombre solo si no está ya almacenado
+        ##if self.medication and not self.medication_name:  
+        self.medication_name = self.medication.name  # Guarda el nombre solo si no está ya almacenado
         super().save(*args, **kwargs)
 
     def __str__(self):

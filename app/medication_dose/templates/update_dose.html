@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h3>Editar Dosis de Medicamento</h3>
+            <p class="text-muted">Residente: {{ resident.full_name }}</p>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="form-group mb-3">
+                    <label for="{{ form.medication.id_for_label }}">{{ form.medication.label }}</label>
+                    {{ form.medication }}
+                    {% if form.medication.errors %}
+                    <div class="text-danger">
+                        {% for error in form.medication.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group mb-3">
+                    <label for="{{ form.dose.id_for_label }}">{{ form.dose.label }}</label>
+                    {{ form.dose }}
+                    {% if form.dose.errors %}
+                    <div class="text-danger">
+                        {% for error in form.dose.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    <a href="{% url 'residents:resident_doses_view' resident.pk %}" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

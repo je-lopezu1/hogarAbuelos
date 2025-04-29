@@ -361,12 +361,15 @@
                                 <i class="fas fa-user-friends me-2"></i>Residentes
                             </a>
                         </li>
+
+                        <!-- ESTO LO PUEDE HACER SOLO EL ADMINISTRATIVO
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'medications:medications_view' %}">
                                 <i class="fas fa-pills me-2"></i>Medicamentos
                             </a>
                         </li>
                         {% endif %}
+                        --->
                         
                         {% if user.profile.is_doctor or user.profile.is_family %}
                         <li class="nav-item">
@@ -376,6 +379,7 @@
                         </li>
                         {% endif %}
 
+                        <!-- ESTO LO PUEDE HACER SOLO EL ADMINISTRATIVO
                         {% if user.profile.is_doctor %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'authentication:create' %}">
@@ -383,6 +387,7 @@
                             </a>
                         </li>
                         {% endif %}
+                        -->
 
                     {% else %}
                         <li class="nav-item">

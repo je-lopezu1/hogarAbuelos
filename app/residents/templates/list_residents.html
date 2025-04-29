@@ -12,9 +12,13 @@
 <div class="container">
     <div class="row">
         <div class="col-12 mb-4">
+            <!-- Solo puede crear nuevos residentes el ADMINISTRATIVO
+            {% if user.profile.is_administrativo %}
             <a href="{% url 'residents:create_resident_view' %}" class="btn btn-success">
                 <i class="fas fa-plus me-2"></i>Añadir Nuevo Residente
             </a>
+            {% endif %}
+            -->
         </div>
         
         <div class="col-12">
@@ -47,7 +51,8 @@
                                 {% endif %}
                             </div>
                             <div class="col-12 mt-3 d-flex justify-content-end">
-                                <!-- Botón de Eliminar -->
+
+                                <!-- ELIMINAR Y EDITAR RESIDENTE SOLO LO PUEDE HACER EL ADMINISTRATIVO
                                 <form action="{% url 'residents:delete_resident_view' resident.pk %}" method="POST" class="d-inline me-2">
                                     {% csrf_token %}
                                     <button type="submit" class="btn btn-danger btn-sm" title="Eliminar" 
@@ -56,10 +61,11 @@
                                     </button>
                                 </form>
                                 
-                                <!-- Botón de Editar -->
+                                
                                 <a href="{% url 'residents:update_resident_view' resident.pk %}" class="btn btn-primary btn-sm me-2" title="Editar">
                                     <i class="fas fa-edit me-1"></i> Editar
                                 </a>
+                                -->
                                 
                                 <!-- Botón de ver dosis de residente -->
                                 <a href="{% url 'residents:resident_doses_view' resident.pk %}" class="btn btn-info btn-sm" title="Ver Dosis">
