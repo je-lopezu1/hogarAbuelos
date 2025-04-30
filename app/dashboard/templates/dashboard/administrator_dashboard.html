@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
-{% block title %}Panel de Control - Doctor{% endblock %}
-{% load auth_extras %}
+{% block title %}Panel de Control - Administrador{% endblock %}
+{% load auth_extras %} {# Load your custom template tags #}
 
 {% block extra_css %}
 <style>
@@ -65,9 +65,9 @@
         border-bottom: 2px solid var(--light-green);
     }
 
-     .action-buttons a, .action-buttons button {
-         margin-right: 5px; /* Adjust spacing between buttons if needed */
-     }
+    .quick-links a {
+         margin: 5px;
+    }
 </style>
 {% endblock %}
 
@@ -75,16 +75,16 @@
 <div class="page-header">
     <div class="container">
         <h2 class="text-center">
-            <i class="fas fa-user-md me-2"></i>Panel de Doctor
+            <i class="fas fa-user-shield me-2"></i>Panel de Administrador
         </h2>
         <p class="text-center text-light">
-            Bienvenido, Dr./Dra. {{ request.user.get_full_name|default:request.user.username }}
+            Bienvenido/a, {{ request.user.get_full_name|default:request.user.username }}
         </p>
     </div>
 </div>
 
 <div class="container">
-    <!-- Estadísticas rápidas -->
+    <!-- Quick Stats -->
     <div class="row mb-4">
         <div class="col-md-4 mb-4">
             <div class="stat-card">
@@ -102,7 +102,7 @@
                     <i class="fas fa-pills"></i>
                 </div>
                 <div class="stat-value">{{ top_medications|length }}</div>
-                <div class="stat-title">Medicamentos principales</div>
+                <div class="stat-title">Medicamentos Principales</div>
             </div>
         </div>
 
@@ -112,14 +112,27 @@
                     <i class="fas fa-clipboard-check"></i>
                 </div>
                 <div class="stat-value">{{ recent_doses|length }}</div>
-                <div class="stat-title">Dosis recientes</div>
+                <div class="stat-title">Dosis Recientes Registradas</div>
             </div>
         </div>
     </div>
 
+    <!-- Quick Links for Admin Actions -->
+    <div class="content-card mb-4 quick-links">
+        <h3 class="panel-title">
+            <i class="fas fa-link me-2"></i>Enlaces Rápidos
+        </h3>
+        <a href="{% url 'residents:create_resident_view' %}" class="btn btn-success"><i class="fas fa-user-plus me-2"></i>Añadir Residente</a>
+        <a href="{% url 'medications:create_medication_view' %}" class="btn btn-success"><i class="fas fa-plus me-2"></i>Añadir Medicamento</a>
+        <a href="{% url 'authentication:signup' %}" class="btn btn-success"><i class="fas fa-user-plus me-2"></i>Crear Nuevo Usuario</a>
+        <a href="{% url 'residents:residents_view' %}" class="btn btn-primary"><i class="fas fa-user-friends me-2"></i>Ver Residentes</a>
+        <a href="{% url 'medications:medications_view' %}" class="btn btn-primary"><i class="fas fa-pills me-2"></i>Ver Medicamentos</a>
+        <!-- Add links to view users if you create a view for that -->
+    </div>
+
 
     <div class="row">
-        <!-- Lista de residentes -->
+        <!-- List of Residents -->
         <div class="col-md-6 mb-4">
             <div class="content-card h-100">
                 <h3 class="panel-title">
@@ -140,17 +153,10 @@
                                     <i class="fas fa-notes-medical me-1"></i>{{ resident.medical_condition }}
                                 </p>
                             </div>
-                            <div class="action-buttons">
-                                <!-- Button to View Doses -->
-                                <a href="{% url 'residents:resident_doses_view' resident.pk %}" class="btn btn-sm btn-primary" title="Ver Dosis">
+                            <div>
+                                <a href="{% url 'residents:resident_doses_view' resident.pk %}" class="btn btn-sm btn-primary">
                                     <i class="fas fa-eye me-1"></i>Ver Dosis
                                 </a>
-                                <!-- Button to Add Dose (Only for Doctors) -->
-                                {% if user.is_authenticated and user.profile.is_doctor %}
-                                <a href="{% url 'medication_dose:create_medication_dose_view' resident.pk %}" class="btn btn-sm btn-success" title="Agregar Dosis">
-                                    <i class="fas fa-plus me-1"></i>Agregar Dosis
-                                </a>
-                                {% endif %}
                             </div>
                         </div>
                     </div>
@@ -160,12 +166,13 @@
                 <div class="text-center py-4">
                     <i class="fas fa-user-friends fa-3x mb-3 text-muted"></i>
                     <p>No hay residentes registrados actualmente.</p>
+                    <a href="{% url 'residents:create_resident_view' %}" class="btn btn-success mt-3"><i class="fas fa-user-plus me-2"></i>Añadir Residente</a>
                 </div>
                 {% endif %}
             </div>
         </div>
 
-        <!-- Dosis recientes -->
+        <!-- Recent Doses -->
         <div class="col-md-6 mb-4">
             <div class="content-card h-100">
                 <h3 class="panel-title">
@@ -199,11 +206,9 @@
                 {% endif %}
             </div>
         </div>
-
     </div>
-    <!-- End of row for Residents List and Recent Doses -->
 
-    <!-- Medicamentos principales -->
+    <!-- Most Common Medications -->
     <div class="content-card mb-4">
         <h3 class="panel-title">
             <i class="fas fa-pills me-2"></i>Medicamentos Más Comunes

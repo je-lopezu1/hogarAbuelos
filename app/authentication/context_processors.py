@@ -10,7 +10,7 @@ def user_profile_context(request):
             return {
                 'user_profile': profile,
                 'is_doctor': profile.is_doctor(),
-                'is_patient': profile.is_patient(),
+                'is_administrator': profile.is_administrator(), # Added
                 'is_family': profile.is_family(),
             }
         except UserProfile.DoesNotExist:
@@ -18,14 +18,14 @@ def user_profile_context(request):
             return {
                 'user_profile': None,
                 'is_doctor': False,
-                'is_patient': False,
+                'is_administrator': False, # Added
                 'is_family': False,
             }
-    
+
     # Usuario no autenticado
     return {
         'user_profile': None,
         'is_doctor': False,
-        'is_patient': False,
+        'is_administrator': False, # Added
         'is_family': False,
     }

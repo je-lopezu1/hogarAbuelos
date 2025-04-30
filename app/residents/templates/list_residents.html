@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load auth_extras %} {# Load your custom template tags #}
 
 {% block title %}Lista de Residentes{% endblock %}
 
@@ -12,15 +13,14 @@
 <div class="container">
     <div class="row">
         <div class="col-12 mb-4">
-            <!-- Solo puede crear nuevos residentes el ADMINISTRATIVO
-            {% if user.profile.is_administrativo %}
+            {# Show "Add Resident" button only for Administrators #}
+            {% if user.is_authenticated and user.profile.is_administrator %}
             <a href="{% url 'residents:create_resident_view' %}" class="btn btn-success">
                 <i class="fas fa-plus me-2"></i>Añadir Nuevo Residente
             </a>
             {% endif %}
-            -->
         </div>
-        
+
         <div class="col-12">
             <div class="content-card">
                 <ul class="list-group list-group-flush">
@@ -34,12 +34,12 @@
                                 <strong><i class="fas fa-calendar-alt me-2 text-success"></i>Edad:</strong> {{ resident.age }}
                             </div>
                             <div class="col-md-4">
-                                <strong><i class="fas fa-notes-medical me-2 text-success"></i>Condición Médica:</strong> 
+                                <strong><i class="fas fa-notes-medical me-2 text-success"></i>Condición Médica:</strong>
                                 {{ resident.medical_condition }}
                             </div>
                             <div class="col-md-3">
                                 <strong><i class="fas fa-pills me-2 text-success"></i>Medicamentos:</strong>
-                                
+
                                 {% if resident.medications.all %}
                                 <ul class="list-unstyled mt-1">
                                     {% for medication in resident.medications.all %}
@@ -51,23 +51,22 @@
                                 {% endif %}
                             </div>
                             <div class="col-12 mt-3 d-flex justify-content-end">
-
-                                <!-- ELIMINAR Y EDITAR RESIDENTE SOLO LO PUEDE HACER EL ADMINISTRATIVO
+                                {# Show Edit and Delete buttons only for Administrators #}
+                                {% if user.is_authenticated and user.profile.is_administrator %}
                                 <form action="{% url 'residents:delete_resident_view' resident.pk %}" method="POST" class="d-inline me-2">
                                     {% csrf_token %}
-                                    <button type="submit" class="btn btn-danger btn-sm" title="Eliminar" 
+                                    <button type="submit" class="btn btn-danger btn-sm" title="Eliminar"
                                            onclick="return confirm('¿Estás seguro de que deseas eliminar este residente?');">
                                         <i class="fas fa-trash me-1"></i> Eliminar
                                     </button>
                                 </form>
-                                
-                                
+
                                 <a href="{% url 'residents:update_resident_view' resident.pk %}" class="btn btn-primary btn-sm me-2" title="Editar">
                                     <i class="fas fa-edit me-1"></i> Editar
                                 </a>
-                                -->
-                                
-                                <!-- Botón de ver dosis de residente -->
+                                {% endif %}
+
+                                <!-- View Doses button (Available to Doctor, Admin, and Family via middleware) -->
                                 <a href="{% url 'residents:resident_doses_view' resident.pk %}" class="btn btn-info btn-sm" title="Ver Dosis">
                                     <i class="fas fa-eye me-1"></i> Ver Dosis
                                 </a>
@@ -77,6 +76,9 @@
                     {% empty %}
                     <li class="list-group-item text-center py-4 text-muted">
                         <i class="fas fa-info-circle me-2"></i>No hay residentes registrados.
+                        {% if user.is_authenticated and user.profile.is_administrator %}
+                            <p class="mt-2">Como administrador, puedes <a href="{% url 'residents:create_resident_view' %}" class="text-success">agregar uno aquí</a>.</p>
+                        {% endif %}
                     </li>
                     {% endfor %}
                 </ul>

@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load auth_extras %} {# Load your custom template tags #}
 
 {% block title %}Dosis de Medicación - {{ resident.name }}{% endblock %}
 
@@ -16,12 +17,15 @@
                 <a href="{% url 'residents:residents_view' %}" class="btn btn-secondary">
                     <i class="fas fa-arrow-left me-2"></i>Volver a la lista de residentes
                 </a>
+                {# Show "Add Dose" button only for Doctors #}
+                {% if user.is_authenticated and user.profile.is_doctor %}
                 <a href="{% url 'medication_dose:create_medication_dose_view' resident.pk %}" class="btn btn-success">
                     <i class="fas fa-plus me-2"></i>Agregar Dosis
                 </a>
+                {% endif %}
             </div>
         </div>
-        
+
         <div class="col-12">
             <div class="content-card">
                 <div class="table-responsive">
@@ -32,8 +36,10 @@
                                 <th>Dosis</th>
                                 <th>Día</th>
                                 <th>Hora</th>
+                                {# Only show Actions column for Doctors #}
+                                {% if user.is_authenticated and user.profile.is_doctor %}
                                 <th>Acciones</th>
-                                <th></th>
+                                {% endif %}
                             </tr>
                         </thead>
                         <tbody>
@@ -43,26 +49,30 @@
                                 <td>{{ dose.dose }}</td>
                                 <td>{{ dose.day }}</td>
                                 <td>{{ dose.time }}</td>
+                                {# Only show actions for Doctors #}
+                                {% if user.is_authenticated and user.profile.is_doctor %}
                                 <td>
-                                    <form method="post" action="{% url 'medication_dose:delete_medication_dose_view' resident.pk dose.pk %}"
-                                        onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta dosis?');">
-                                        {% csrf_token %}
-                                        <button type="submit" class="btn btn-danger btn-sm">
-                                            <i class="fas fa-trash me-1"></i>Eliminar
-                                        </button>
-                                    </form>
+                                    <div class="d-flex gap-2">
+                                        <!-- Edit Button (only for Doctors) -->
+                                        <a href="{% url 'medication_dose:update_medication_dose_view' resident.pk dose.pk %}" class="btn btn-info btn-sm" title="Editar">
+                                            <i class="fas fa-edit"></i> Editar
+                                        </a>
+                                        <!-- Delete Button (only for Doctors) -->
+                                        <form method="post" action="{% url 'medication_dose:delete_medication_dose_view' resident.pk dose.pk %}"
+                                            onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta dosis?');" class="d-inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger btn-sm" title="Eliminar">
+                                                <i class="fas fa-trash"></i> Eliminar
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
-                                <td>                    
-                                    {% if user.profile.is_doctor %}
-                                    <a href="{% url 'medication_dose:update_medication_dose_view' resident.pk dose.pk %}" class="btn btn-info btn-sm">
-                                        <i class="fas fa-edit me-1"></i>Editar
-                                    </a>
-                                    {% endif %}
-                                </td>
+                                {% endif %}
                             </tr>
                             {% empty %}
                             <tr>
-                                <td colspan="5" class="text-center text-muted py-4">
+                                {# Adjust colspan based on whether Actions column is shown #}
+                                <td colspan="{% if user.is_authenticated and user.profile.is_doctor %}5{% else %}4{% endif %}" class="text-center text-muted py-4">
                                     <i class="fas fa-info-circle me-2"></i>No hay dosis registradas para este residente.
                                 </td>
                             </tr>

@@ -27,59 +27,39 @@ def login_view(request):
 
     return render(request, 'authentication/login.html', {'form': form})
 
+# @login_required # You might want to restrict signup to authenticated users (e.g., administrators)
 def signup_view(request):
+    # Allow superusers or administrators to access signup page
     if request.user.is_authenticated:
-        return redirect('dashboard:index')
+        if not (request.user.is_superuser or (hasattr(request.user, 'profile') and request.user.profile.is_administrator())):
+             return redirect('dashboard:index') # Redirect if not authorized
+    elif request.user.is_authenticated: # If authenticated but not superuser/admin
+         return redirect('dashboard:index') # Redirect if not authorized
+
 
     if request.method == 'POST':
         form = UserSignupForm(request.POST)
         if form.is_valid():
-            # Verificar si el residente seleccionado ya está asignado a otro perfil
-            selected_resident = form.cleaned_data.get('resident')
-            if selected_resident and UserProfile.objects.filter(resident=selected_resident).exists():
-                messages.error(request, f'El residente {selected_resident.name} ya está asignado a otro usuario. Por favor, seleccione otro residente o contacte al administrador.')
-                return render(request, 'authentication/signup.html', {'form': form})
+            # If you decide to associate an administrator with ONE resident for dashboard view:
+            selected_resident_for_admin = form.cleaned_data.get('resident')
+            if form.cleaned_data.get('user_type') == 'administrator' and selected_resident_for_admin:
+                 if UserProfile.objects.filter(user_type='administrator', resident=selected_resident_for_admin).exists():
+                     messages.error(request, f'El residente {selected_resident_for_admin.name} ya está asignado a otro usuario administrador. Por favor, seleccione otro residente o contacte al administrador.')
+                     return render(request, 'authentication/signup.html', {'form': form})
 
             try:
-                # Crear el usuario
-                user = form.save()
+                # Create the user
+                user = form.save(commit=False) # Don't save profile yet
+                user.save()
 
-                # Obtener o actualizar el perfil de usuario
-                try:
-                    user_profile = UserProfile.objects.get(user=user)
-                except UserProfile.DoesNotExist:
-                    # En caso de que no exista, crearlo
-                    user_profile = UserProfile(user=user)
+                # User profile creation is now handled in the form's save method
+                # The form's save method creates/updates the UserProfile and sets role-specific fields.
+                form.save()
 
-                # Actualizar campos del perfil
-                user_profile.user_type = form.cleaned_data.get('user_type')
-                user_profile.phone_number = form.cleaned_data.get('phone_number')
-
-                # Agregar campos específicos según el tipo de usuario
-                if user_profile.user_type == 'doctor':
-                    user_profile.specialty = form.cleaned_data.get('specialty')
-                    user_profile.save()  # Guardar antes de establecer relaciones many-to-many
-
-
-                elif user_profile.user_type == 'patient':
-                    if selected_resident:
-                        user_profile.resident = selected_resident
-                    user_profile.save()
-
-                elif user_profile.user_type == 'family':
-                    user_profile.relationship = form.cleaned_data.get('relationship')
-                    user_profile.save()  # Guardar antes de establecer relaciones many-to-many
-                    if form.cleaned_data.get('related_residents'):
-                        user_profile.related_residents.set(form.cleaned_data.get('related_residents'))
-
-                # Guardar el perfil
-                user_profile.save()
-
-                # Iniciar sesión del usuario
-                raw_password = form.cleaned_data.get('password1')
-                user = authenticate(username=user.username, password=raw_password)
-                login(request, user)
-                return redirect('dashboard:index')
+                # Don't auto-login newly created users here if only admins create users
+                # Instead, redirect to a success page or the dashboard
+                messages.success(request, f'Usuario "{user.username}" creado exitosamente.')
+                return redirect('dashboard:index') # Redirect to dashboard after creating user
 
             except IntegrityError as e:
                 if 'UNIQUE constraint failed: authentication_userprofile.resident_id' in str(e):
@@ -87,7 +67,7 @@ def signup_view(request):
                 else:
                     messages.error(request, f'Error al crear el usuario: {str(e)}')
 
-                # Si ocurre un error, eliminar el usuario que se acaba de crear
+                # If an error occurs, try to delete the user that was just created
                 if 'user' in locals() and user.pk:
                     user.delete()
 
@@ -101,66 +81,48 @@ def logout_view(request):
     logout(request)
     return redirect('authentication:login')
 
+# This view seems redundant with signup_view. You likely only need one.
+# Assuming this is just an alias for the signup view logic.
 def create_user(request):
+    # Restrict this view to administrators and superusers
+    if not request.user.is_authenticated or not (request.user.is_superuser or (hasattr(request.user, 'profile') and request.user.profile.is_administrator())):
+         return redirect('dashboard:index') # Redirect if not authorized
+
     if request.method == 'POST':
         form = UserSignupForm(request.POST)
         if form.is_valid():
-            # Verificar si el residente seleccionado ya está asignado a otro perfil
-            selected_resident = form.cleaned_data.get('resident')
-            if selected_resident and UserProfile.objects.filter(resident=selected_resident).exists():
-                messages.error(request, f'El residente {selected_resident.name} ya está asignado a otro usuario. Por favor, seleccione otro residente o contacte al administrador.')
-                return render(request, 'authentication/signup.html', {'form': form})
+             # If you decide to associate an administrator with ONE resident for dashboard view:
+            selected_resident_for_admin = form.cleaned_data.get('resident')
+            if form.cleaned_data.get('user_type') == 'administrator' and selected_resident_for_admin:
+                 if UserProfile.objects.filter(user_type='administrator', resident=selected_resident_for_admin).exists():
+                     messages.error(request, f'El residente {selected_resident_for_admin.name} ya está asignado a otro usuario administrador. Por favor, seleccione otro residente o contacte al administrador.')
+                     return render(request, 'authentication/signup.html', {'form': form})
+
 
             try:
-                # Crear el usuario
-                user = form.save()
+                # Create the user
+                user = form.save(commit=False)
+                user.save()
 
-                # Obtener o actualizar el perfil de usuario
-                try:
-                    user_profile = UserProfile.objects.get(user=user)
-                except UserProfile.DoesNotExist:
-                    # En caso de que no exista, crearlo
-                    user_profile = UserProfile(user=user)
+                # User profile creation is now handled in the form's save method
+                form.save()
 
-                # Actualizar campos del perfil
-                user_profile.user_type = form.cleaned_data.get('user_type')
-                user_profile.phone_number = form.cleaned_data.get('phone_number')
-
-                # Agregar campos específicos según el tipo de usuario
-                if user_profile.user_type == 'doctor':
-                    user_profile.specialty = form.cleaned_data.get('specialty')
-                    user_profile.save()  # Guardar antes de establecer relaciones many-to-many
-
-
-                elif user_profile.user_type == 'patient':
-                    if selected_resident:
-                        user_profile.resident = selected_resident
-                    user_profile.save()
-
-                elif user_profile.user_type == 'family':
-                    user_profile.relationship = form.cleaned_data.get('relationship')
-                    user_profile.save()  # Guardar antes de establecer relaciones many-to-many
-                    if form.cleaned_data.get('related_residents'):
-                        user_profile.related_residents.set(form.cleaned_data.get('related_residents'))
-
-                # Guardar el perfil
-                user_profile.save()
-
-                
+                messages.success(request, f'Usuario "{user.username}" creado exitosamente.')
                 return redirect('dashboard:index')
 
             except IntegrityError as e:
-                if 'UNIQUE constraint failed: authentication_userprofile.resident_id' in str(e):
-                    messages.error(request, 'Este residente ya está asignado a otro usuario. Por favor, seleccione otro residente.')
-                else:
-                    messages.error(request, f'Error al crear el usuario: {str(e)}')
+                 if 'UNIQUE constraint failed: authentication_userprofile.resident_id' in str(e):
+                     messages.error(request, 'Este residente ya está asignado a otro usuario. Por favor, seleccione otro residente.')
+                 else:
+                     messages.error(request, f'Error al crear el usuario: {str(e)}')
 
-                # Si ocurre un error, eliminar el usuario que se acaba de crear
-                if 'user' in locals() and user.pk:
-                    user.delete()
+                 # If an error occurs, try to delete the user that was just created
+                 if 'user' in locals() and user.pk:
+                     user.delete()
 
-                return render(request, 'authentication/signup.html', {'form': form})
+                 return render(request, 'authentication/signup.html', {'form': form})
     else:
         form = UserSignupForm()
 
+    # Assuming you want to use the signup template for this view as well
     return render(request, 'authentication/signup.html', {'form': form})

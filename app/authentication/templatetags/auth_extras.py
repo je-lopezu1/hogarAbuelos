@@ -11,12 +11,12 @@ def has_role(user, role):
     """
     if not user.is_authenticated:
         return False
-        
+
     try:
         if role == 'doctor':
             return user.profile.is_doctor()
-        elif role == 'patient':
-            return user.profile.is_patient()
+        elif role == 'administrator': # Added
+            return user.profile.is_administrator()
         elif role == 'family':
             return user.profile.is_family()
         else:

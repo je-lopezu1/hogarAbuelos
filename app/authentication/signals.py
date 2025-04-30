@@ -12,4 +12,6 @@ def create_user_profile(sender, instance, created, **kwargs):
     if created:
         # Verificar si ya existe un perfil para este usuario (por si acaso)
         if not UserProfile.objects.filter(user=instance).exists():
+            # Set a default user type, perhaps 'family' or 'administrator' depending on your default
+            # Let's set it to 'family' as a safe default if no other type is specified.
             UserProfile.objects.create(user=instance, user_type='family')

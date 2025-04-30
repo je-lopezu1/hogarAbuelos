@@ -7,6 +7,7 @@ from django.utils import timezone
 
 # 1. Configurar entorno de Django
 # Cambia 'hogarAbuelos.settings' a la ruta de tu archivo settings.py
+# Note: Your project is named 'app', so the settings module is 'app.settings'
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'app.settings')
 django.setup()
 
@@ -42,15 +43,18 @@ def clean_database():
             superuser = User.objects.filter(is_superuser=True).first()
             if superuser:
                 print(f"Se preservará el superusuario: {superuser.username}")
-        except:
-            print("No se encontró ningún superusuario.")
+        except Exception as e:
+            print(f"Error al buscar superusuario: {e}")
+
 
     try:
         print("Eliminando dosis de medicamentos...")
         MedicationDose.objects.all().delete()
 
+        # Delete UserProfile objects first, linking to User and Resident
         print("Eliminando perfiles de usuario...")
         UserProfile.objects.all().delete()
+
 
         print("Eliminando medicamentos...")
         Medication.objects.all().delete()
@@ -63,8 +67,10 @@ def clean_database():
 
         print("Eliminando usuarios...")
         if preserve_superuser.lower() == 's' and superuser:
+            # Delete users excluding the preserved superuser
             User.objects.exclude(id=superuser.id).delete()
         else:
+            # Delete all users if superuser is not preserved or not found
             User.objects.all().delete()
 
         print("Base de datos limpiada con éxito.")
@@ -154,11 +160,13 @@ def assign_medications(residents, medications):
     print("\n=== ASIGNANDO MEDICAMENTOS A RESIDENTES ===")
 
     for resident in residents:
-        # Limpiar medicamentos existentes para evitar duplicados
+        # Clear existing medications to avoid duplicates
         resident.medications.clear()
 
-        # Asignar entre 1 y 5 medicamentos aleatorios
+        # Assign between 1 and 5 random medications
         num_meds = random.randint(1, 5)
+        # Ensure num_meds doesn't exceed the total number of medications
+        num_meds = min(num_meds, len(medications))
         selected_meds = random.sample(medications, num_meds)
 
         for med in selected_meds:
@@ -178,11 +186,11 @@ def create_users_and_profiles(residents):
 
     created_users = {
         'doctores': [],
-        'pacientes': [],
+        'administradores': [], # Changed from 'pacientes'
         'familiares': []
     }
 
-    # Crear médicos (doctors)
+    # Create doctors
     for i in range(5):
         username = f"doctor{i+1}"
         email = f"doctor{i+1}@example.com"
@@ -196,14 +204,14 @@ def create_users_and_profiles(residents):
             }
         )
 
-        # Si se creó, establecer la contraseña
+        # If created, set the password
         if created:
             user.set_password(DEFAULT_PASSWORD)
             user.save()
             print(f"  ✓ Creado usuario doctor: {username}")
         else:
             print(f"  ⚠ Usuario doctor ya existe: {username}")
-            # Actualizar contraseña para asegurar consistencia en pruebas
+            # Update password to ensure consistency in tests
             user.set_password(DEFAULT_PASSWORD)
             user.save()
 
@@ -221,55 +229,57 @@ def create_users_and_profiles(residents):
             print(f"  ✓ Creado perfil para: {username} (doctor)")
         else:
             print(f"  ⚠ Perfil ya existe para: {username}")
-            # Nos aseguramos de que sea 'doctor'
+            # Ensure the user_type is correct if profile already exists
             profile.user_type = 'doctor'
-            profile.specialty = random.choice(['Geriatría', 'Cardiología', 'Neurología', 'Medicina Interna', 'Psiquiatría'])
+            profile.specialty = profile.specialty or random.choice(['Geriatría', 'Cardiología', 'Neurología', 'Medicina Interna', 'Psiquiatría'])
             profile.save()
 
 
-    # Crear usuarios "paciente" para algunos residentes
-    for i, resident in enumerate(residents[:10]):  # Solo para los primeros 10 residentes
-        username = f"paciente{i+1}"
-        email = f"paciente{i+1}@example.com"
+    # Create administrator users (replaces patient users)
+    # Administrators can optionally be linked to ONE resident in the form, but not mandatory for their role
+    for i in range(3): # Create a few administrators
+        username = f"admin{i+1}"
+        email = f"admin{i+1}@example.com"
 
         user, created = User.objects.get_or_create(
             username=username,
             defaults={
                 'email': email,
-                'first_name': resident.name.split()[0],
-                'last_name': " ".join(resident.name.split()[1:]) if len(resident.name.split()) > 1 else ""
+                'first_name': f"Administrador{i+1}",
+                'last_name': f"Apellido{i+1}"
             }
         )
 
         if created:
             user.set_password(DEFAULT_PASSWORD)
             user.save()
-            print(f"  ✓ Creado usuario paciente: {username}")
+            print(f"  ✓ Creado usuario administrador: {username}")
         else:
-            print(f"  ⚠ Usuario paciente ya existe: {username}")
+            print(f"  ⚠ Usuario administrador ya existe: {username}")
             user.set_password(DEFAULT_PASSWORD)
             user.save()
 
-        created_users['pacientes'].append({'username': username, 'password': DEFAULT_PASSWORD})
+        created_users['administradores'].append({'username': username, 'password': DEFAULT_PASSWORD})
 
         profile, profile_created = UserProfile.objects.get_or_create(
             user=user,
             defaults={
-                'user_type': 'patient',
-                'resident': resident
+                'user_type': 'administrator',
+                # Administrators are not automatically linked to a resident profile like patients were
+                'resident': None
             }
         )
 
         if profile_created:
-            print(f"  ✓ Creado perfil para: {username} (patient), asociado a {resident.name}")
+            print(f"  ✓ Creado perfil para: {username} (administrator)")
         else:
-            # Asegurar que el perfil está asociado al residente correcto
-            profile.user_type = 'patient'
-            profile.resident = resident
-            profile.save()
-            print(f"  ⚠ Perfil actualizado para: {username}, asociado a residente: {resident.name}")
+             print(f"  ⚠ Perfil ya existe para: {username}")
+             profile.user_type = 'administrator'
+             profile.resident = None # Ensure no old patient link persists
+             profile.save()
 
-    # Crear usuarios "familiar"
+
+    # Create family users
     for i in range(8):
         username = f"familiar{i+1}"
         email = f"familiar{i+1}@example.com"
@@ -306,13 +316,18 @@ def create_users_and_profiles(residents):
             print(f"  ✓ Creado perfil para: {username} (family)")
         else:
             print(f"  ⚠ Perfil ya existe para: {username}")
+            # Ensure the user_type is correct if profile already exists
             profile.user_type = 'family'
-            profile.relationship = random.choice(['Hijo/a', 'Sobrino/a', 'Nieto/a', 'Hermano/a'])
+            profile.relationship = profile.relationship or random.choice(['Hijo/a', 'Sobrino/a', 'Nieto/a', 'Hermano/a'])
             profile.save()
 
-        # Asignar residentes aleatorios (entre 1 y 2)
-        profile.related_residents.clear()
+
+        # Assign random residents (between 1 and 2)
+        profile.related_residents.clear() # Clear existing relations before adding new ones
         num_relatives = random.randint(1, 2)
+        # Ensure num_relatives doesn't exceed the total number of residents
+        num_relatives = min(num_relatives, len(residents))
+
         assigned_relatives = random.sample(residents, num_relatives)
 
         for relative in assigned_relatives:
@@ -346,21 +361,29 @@ def create_medication_doses(residents):
         print(f"  Generando dosis para: {resident.name}")
         resident_doses = 0
 
-        # Para cada medicamento del residente
+        # For each medication of the resident
         for medication in medications:
-            # Determinar cuántas veces al día toma el medicamento (1 a 3)
+            # Determine how many times a day the medication is taken (1 to 3)
             times_per_day = random.randint(1, 3)
-            medication_times = random.sample(times, times_per_day)
+            # Ensure times_per_day doesn't exceed the available times
+            medication_times_list = random.sample(times, min(times_per_day, len(times)))
 
-            # Generar dosis para algunos días aleatorios
-            num_days = random.randint(10, 25)  # Días con registro
-            random_days = random.sample(range((end_date - start_date).days), num_days)
+            # Generate doses for some random days
+            num_days = random.randint(10, 25)  # Days with records
+            total_days_range = (end_date - start_date).days
+            # Ensure num_days doesn't exceed the total date range
+            num_days = min(num_days, total_days_range)
 
-            for day_offset in random_days:
+            if total_days_range > 0:
+                 random_day_offsets = random.sample(range(total_days_range), num_days)
+            else:
+                 random_day_offsets = [] # Handle case where date range is 0
+
+            for day_offset in random_day_offsets:
                 current_date = start_date + timedelta(days=day_offset)
 
-                for time_str in medication_times:
-                    # Crear dosis, ejemplo: "1 tabletas"
+                for time_str in medication_times_list:
+                    # Create dose text, example: "1 tableta"
                     dose_text = f"{random.randint(1, 3)} {random.choice(['tabletas', 'cápsulas', 'ml'])}"
 
                     MedicationDose.objects.create(
@@ -389,13 +412,14 @@ def print_credentials_summary(users):
     print(f"Contraseña universal: {DEFAULT_PASSWORD}")
     print("--------------------------------------------------------")
 
-    print("\n👨‍⚕️ MÉDICOS:")
+    print("\n👨‍⚕️ DOCTORES:")
     for doctor in users['doctores']:
         print(f"  Usuario: {doctor['username']:<15} | Contraseña: {doctor['password']}")
 
-    print("\n👴 PACIENTES:")
-    for patient in users['pacientes']:
-        print(f"  Usuario: {patient['username']:<15} | Contraseña: {patient['password']}")
+    print("\n🛡️ ADMINISTRADORES:") # Changed label and icon
+    for admin in users['administradores']:
+        print(f"  Usuario: {admin['username']:<15} | Contraseña: {admin['password']}")
+
 
     print("\n👪 FAMILIARES:")
     for family in users['familiares']:
@@ -414,39 +438,39 @@ def populate_db():
     print("   SCRIPT DE GENERACIÓN DE DATOS FICTICIOS")
     print("============================================")
 
-    # Preguntar si se desea limpiar la base de datos
+    # Ask if database should be cleaned
     should_clean = input("¿Deseas limpiar la base de datos antes de poblarla? (s/n): ")
     if should_clean.lower() == 's':
         if not clean_database():
             return
 
-    # 1. Crear medicamentos
+    # 1. Create medications
     medications = create_medications()
 
-    # 2. Crear residentes
+    # 2. Create residents
     residents = create_residents()
 
-    # 3. Asignar medicamentos a residentes
+    # 3. Assign medications to residents
     assign_medications(residents, medications)
 
-    # 4. Crear usuarios y perfiles
+    # 4. Create users and profiles
     created_users = create_users_and_profiles(residents)
 
-    # 5. Crear historial de dosis de medicamentos
+    # 5. Create medication dose history
     create_medication_doses(residents)
 
-    # 6. Imprimir resumen final
+    # 6. Print final summary
     print("\n=== RESUMEN DE DATOS CREADOS ===")
     print(f"✓ Medicamentos: {Medication.objects.count()}")
     print(f"✓ Residentes: {Resident.objects.count()}")
     print(f"✓ Usuarios: {User.objects.count()}")
     print(f"✓ Dosis de medicamentos: {MedicationDose.objects.count()}")
 
-    # Mostrar credenciales generadas
+    # Show generated credentials
     print_credentials_summary(created_users)
 
 # -------------------------------------------------------------------
-# Ejecutar función principal si se llama directamente este archivo
+# Execute main function if this file is called directly
 # -------------------------------------------------------------------
 if __name__ == '__main__':
     try:
