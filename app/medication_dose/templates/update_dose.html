@@ -5,12 +5,20 @@
     <div class="card">
         <div class="card-header">
             <h3>Editar Dosis de Medicamento</h3>
-            <p class="text-muted">Residente: {{ resident.full_name }}</p>
+            <p class="text-muted">Residente: {{ resident.name }}</p> {# Changed from full_name #}
         </div>
         <div class="card-body">
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
             <form method="post">
                 {% csrf_token %}
-                
+
                 <div class="form-group mb-3">
                     <label for="{{ form.medication.id_for_label }}">{{ form.medication.label }}</label>
                     {{ form.medication }}
@@ -22,7 +30,7 @@
                     </div>
                     {% endif %}
                 </div>
-                
+
                 <div class="form-group mb-3">
                     <label for="{{ form.dose.id_for_label }}">{{ form.dose.label }}</label>
                     {{ form.dose }}
@@ -34,10 +42,23 @@
                     </div>
                     {% endif %}
                 </div>
-                
+
+                <div class="form-group mb-3"> {# New field for quantity #}
+                    <label for="{{ form.quantity_administered.id_for_label }}">{{ form.quantity_administered.label }}</label>
+                    {{ form.quantity_administered }}
+                    {% if form.quantity_administered.errors %}
+                    <div class="text-danger">
+                        {% for error in form.quantity_administered.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+
+
                 <div class="form-group">
                     <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                    <a href="{% url 'residents:resident_doses_view' resident.pk %}" class="btn btn-secondary">Cancelar</a>
+                    <a href="{% url 'medication_dose:resident_doses_view' resident.pk %}" class="btn btn-secondary">Cancelar</a> {# Corrected URL name #}
                 </div>
             </form>
         </div>

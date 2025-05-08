@@ -14,7 +14,7 @@ django.setup()
 # 2. Importar modelos después de configurar Django
 from django.contrib.auth.models import User
 from residents.models import Resident
-from medications.models import Medication
+from medications.models import Medication, MedicationInventory # Import MedicationInventory
 from medication_dose.models import MedicationDose
 from authentication.models import UserProfile
 from dashboard.models import DashboardPreference
@@ -55,6 +55,9 @@ def clean_database():
         print("Eliminando perfiles de usuario...")
         UserProfile.objects.all().delete()
 
+        # Delete MedicationInventory before Medications
+        print("Eliminando inventario de medicamentos...")
+        MedicationInventory.objects.all().delete()
 
         print("Eliminando medicamentos...")
         Medication.objects.all().delete()
@@ -81,9 +84,9 @@ def clean_database():
         return False
 
 # -------------------------------------------------------------------
-# Función para crear medicamentos de muestra
+# Función para crear medicamentos de muestra y su inventario
 # -------------------------------------------------------------------
-def create_medications():
+def create_medications_and_inventory():
     medications = [
         'Paracetamol', 'Ibuprofeno', 'Aspirina', 'Omeprazol', 'Lorazepam',
         'Diazepam', 'Metformina', 'Enalapril', 'Losartan', 'Atorvastatina',
@@ -91,7 +94,7 @@ def create_medications():
         'Esomeprazol', 'Amlodipino', 'Lisinopril', 'Metoprolol', 'Warfarina'
     ]
 
-    print("\n=== CREANDO MEDICAMENTOS ===")
+    print("\n=== CREANDO MEDICAMENTOS E INVENTARIO ===")
     created_medications = []
 
     for med_name in medications:
@@ -101,6 +104,20 @@ def create_medications():
             print(f"  ✓ Creado medicamento: {med_name}")
         else:
             print(f"  ⚠ Medicamento ya existe: {med_name}")
+
+        # Create or update inventory for the medication
+        inventory, created = MedicationInventory.objects.get_or_create(
+            medication=medication,
+            defaults={'quantity': random.randint(50, 200)} # Initial random quantity
+        )
+        if created:
+            print(f"    ✓ Creado inventario para {med_name} con {inventory.quantity} unidades")
+        else:
+             # Update quantity if inventory already exists
+             inventory.quantity = random.randint(50, 200) # Reset quantity for consistency
+             inventory.save()
+             print(f"    ⚠ Inventario ya existe para {med_name}, actualizado a {inventory.quantity} unidades")
+
 
     return created_medications
 
@@ -186,7 +203,7 @@ def create_users_and_profiles(residents):
 
     created_users = {
         'doctores': [],
-        'administradores': [], # Changed from 'pacientes'
+        'administradores': [],
         'familiares': []
     }
 
@@ -235,9 +252,8 @@ def create_users_and_profiles(residents):
             profile.save()
 
 
-    # Create administrator users (replaces patient users)
-    # Administrators can optionally be linked to ONE resident in the form, but not mandatory for their role
-    for i in range(3): # Create a few administrators
+    # Create administrator users
+    for i in range(3):
         username = f"admin{i+1}"
         email = f"admin{i+1}@example.com"
 
@@ -265,8 +281,7 @@ def create_users_and_profiles(residents):
             user=user,
             defaults={
                 'user_type': 'administrator',
-                # Administrators are not automatically linked to a resident profile like patients were
-                'resident': None
+                'resident': None # Admins are not typically linked to a single resident like old patients were
             }
         )
 
@@ -385,18 +400,33 @@ def create_medication_doses(residents):
                 for time_str in medication_times_list:
                     # Create dose text, example: "1 tableta"
                     dose_text = f"{random.randint(1, 3)} {random.choice(['tabletas', 'cápsulas', 'ml'])}"
+                    # Random quantity administered
+                    quantity_admin = random.randint(1, 5)
 
-                    MedicationDose.objects.create(
-                        resident=resident,
-                        medication=medication,
-                        dose=dose_text,
-                        day=current_date,
-                        time=time_str,
-                        medication_name=medication.name
-                    )
 
-                    total_doses += 1
-                    resident_doses += 1
+                    # Check if there's enough inventory BEFORE creating
+                    try:
+                        inventory = medication.inventory
+                        if inventory.quantity >= quantity_admin:
+                             MedicationDose.objects.create(
+                                resident=resident,
+                                medication=medication,
+                                dose=dose_text,
+                                quantity_administered=quantity_admin, # Include quantity
+                                day=current_date,
+                                time=time_str,
+                                medication_name=medication.name # This will be overwritten by model save, but good practice
+                            )
+
+                             total_doses += 1
+                             resident_doses += 1
+                        else:
+                             # Optionally print a message if inventory is low
+                             print(f"    ⊗ Inventario bajo para {medication.name}. No se creó la dosis para {resident.name} en {current_date} {time_str}")
+
+                    except MedicationInventory.DoesNotExist:
+                         print(f"    ⊗ Inventario no encontrado para {medication.name}. No se creó la dosis para {resident.name} en {current_date} {time_str}")
+
 
         print(f"    ✓ {resident_doses} dosis creadas para {resident.name}")
 
@@ -416,7 +446,7 @@ def print_credentials_summary(users):
     for doctor in users['doctores']:
         print(f"  Usuario: {doctor['username']:<15} | Contraseña: {doctor['password']}")
 
-    print("\n🛡️ ADMINISTRADORES:") # Changed label and icon
+    print("\n🛡️ ADMINISTRADORES:")
     for admin in users['administradores']:
         print(f"  Usuario: {admin['username']:<15} | Contraseña: {admin['password']}")
 
@@ -444,8 +474,8 @@ def populate_db():
         if not clean_database():
             return
 
-    # 1. Create medications
-    medications = create_medications()
+    # 1. Create medications and their inventory
+    medications = create_medications_and_inventory()
 
     # 2. Create residents
     residents = create_residents()
@@ -456,12 +486,13 @@ def populate_db():
     # 4. Create users and profiles
     created_users = create_users_and_profiles(residents)
 
-    # 5. Create medication dose history
+    # 5. Create medication dose history (this will now impact inventory)
     create_medication_doses(residents)
 
     # 6. Print final summary
     print("\n=== RESUMEN DE DATOS CREADOS ===")
     print(f"✓ Medicamentos: {Medication.objects.count()}")
+    print(f"✓ Inventario de Medicamentos: {MedicationInventory.objects.count()}")
     print(f"✓ Residentes: {Resident.objects.count()}")
     print(f"✓ Usuarios: {User.objects.count()}")
     print(f"✓ Dosis de medicamentos: {MedicationDose.objects.count()}")
