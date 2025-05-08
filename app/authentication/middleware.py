@@ -2,7 +2,7 @@ from django.shortcuts import redirect
 from django.urls import reverse, resolve
 from django.utils.deprecation import MiddlewareMixin
 from django.urls.exceptions import Resolver404
-from authentication.models import UserProfile # Make sure UserProfile is imported
+from authentication.models import UserProfile
 
 class RoleBasedAccessMiddleware(MiddlewareMixin):
     """
@@ -20,22 +20,22 @@ class RoleBasedAccessMiddleware(MiddlewareMixin):
     RESTRICTED_URLS = {
         # Administrator and Doctor can access these
         'residents:residents_view': ['doctor', 'administrator'],
-        'residents:create_resident_view': ['administrator'], # <--- This is already restricted to 'administrator'
-        'residents:update_resident_view': ['administrator'], # Only Admin updates
-        'residents:delete_resident_view': ['administrator'], # Only Admin deletes
+        'residents:create_resident_view': ['administrator'],
+        'residents:update_resident_view': ['administrator'],
+        'residents:delete_resident_view': ['administrator'],
         'medications:medications_view': ['doctor', 'administrator'],
-        'medications:create_medication_view': ['administrator'], # Only Admin creates medications
-        'medications:update_medication_view': ['administrator'], # Only Admin updates medications
-        'medications:delete_medication_view': ['administrator'], # Only Admin deletes medications
-        'authentication:signup': ['administrator'], # Only Admin creates users
-        'authentication:create': ['administrator'], # Assuming create is same as signup and restricted
+        'medications:create_medication_view': ['administrator'],
+        'medications:update_medication_view': ['administrator'],
+        'medications:delete_medication_view': ['administrator'],
+        'authentication:signup': ['administrator'],
+        'authentication:create': ['administrator'],
 
         # Medication Dose views accessible to Doctor and Administrator (view only for Admin)
         # Family can also view resident doses
         'medication_dose:resident_doses_view': ['doctor', 'administrator', 'family'],
-        'medication_dose:create_medication_dose_view': ['doctor'], # Only Doctor creates doses (This view is removed now, but the restriction is here)
-        'medication_dose:update_medication_dose_view': ['doctor'], # Only Doctor updates doses
-        'medication_dose:delete_medication_dose_view': ['doctor'], # Only Doctor deletes doses
+        'medication_dose:update_medication_dose_view': ['doctor'],
+        'medication_dose:delete_medication_dose_view': ['doctor'],
+        'medication_dose:add_resident_medication_quantity_view': ['administrator'], # <--- Restrict adding quantity to Administrator
 
     }
 
@@ -68,9 +68,9 @@ class RoleBasedAccessMiddleware(MiddlewareMixin):
                 user_type = user_profile.user_type
                 if user_type not in allowed_roles:
                     # messages.error(request, 'No tienes permiso para acceder a esta página.') # Optional: Add a message
-                    return redirect('dashboard:index') # Redirect to dashboard if not allowed
+                    return redirect('dashboard:index')
             except UserProfile.DoesNotExist:
                 # messages.error(request, 'Perfil de usuario no encontrado.') # Optional: Add a message
-                return redirect('dashboard:index') # Redirect to dashboard if no profile exists
+                return redirect('dashboard:index')
 
         return None
