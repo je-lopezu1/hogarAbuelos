@@ -14,10 +14,10 @@
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="content-card">
-                {% if form.errors or formset.errors %}
+                {% if form.errors %} {# Only check main form errors #}
                 <div class="alert alert-danger">
                     <i class="fas fa-exclamation-triangle me-2"></i>
-                    <strong>¡Ups!</strong> Hay algunos errores en el formulario o en las cantidades de medicamentos.
+                    <strong>¡Ups!</strong> Hay algunos errores en el formulario.
                 </div>
                 {% endif %}
                  {% if messages %}
@@ -34,7 +34,7 @@
 
                     {# Main Resident Form #}
                     {% for field in form %}
-                        {% if field.name != 'medications' %} {# We handle medications with the formset #}
+                        {% if field.name != 'medications' %} {# Exclude the medications field completely #}
                             <div class="mb-3">
                                 <label for="{{ field.id_for_label }}" class="form-label fw-bold">{{ field.label }}</label>
                                 {% if field.errors %}
@@ -48,59 +48,11 @@
                         {% endif %}
                     {% endfor %}
 
-                    <h4 class="mt-4 mb-3">Gestionar Medicamentos y Cantidades</h4>
-                    {{ formset.management_form }} {# Management form is crucial for formsets #}
-
-                    {% for form in formset %}
-                        <div class="border p-3 mb-3 rounded bg-light">
-                            {{ form.errors }} {# Display form errors if any #}
-                            <div class="row align-items-center">
-                                {# Check if this is an existing instance (has an ID) or an empty extra form #}
-                                {% if form.instance.pk %}
-                                    {# Existing ResidentMedication instance - display medication name #}
-                                    <div class="col-md-6">
-                                        <strong>Medicamento:</strong> {{ form.instance.medication.name }}
-                                        {{ form.medication }} {# Keep the hidden medication field for saving #}
-                                    </div>
-                                    <div class="col-md-4">
-                                        <label for="{{ form.quantity_on_hand.id_for_label }}" class="form-label fw-bold">Cantidad:</label> {# Simplified label #}
-                                        {{ form.quantity_on_hand|add_class:"form-control form-control-sm" }}
-                                         {% if form.quantity_on_hand.errors %}
-                                            <div class="invalid-feedback d-block">{{ form.quantity_on_hand.errors }}</div>
-                                        {% endif %}
-                                    </div>
-                                {% else %}
-                                    {# Empty extra form - allow selecting medication and setting quantity #}
-                                    <div class="col-md-6">
-                                         <label for="{{ form.medication.id_for_label }}" class="form-label fw-bold">{{ form.medication.label }}</label>
-                                         {{ form.medication|add_class:"form-select form-select-sm" }}
-                                          {% if form.medication.errors %}
-                                            <div class="invalid-feedback d-block">{{ form.medication.errors }}</div>
-                                        {% endif %}
-                                    </div>
-                                     <div class="col-md-4">
-                                        <label for="{{ form.quantity_on_hand.id_for_label }}" class="form-label fw-bold">Cantidad:</label> {# Simplified label #}
-                                        {{ form.quantity_on_hand|add_class:"form-control form-control-sm" }}
-                                         {% if form.quantity_on_hand.errors %}
-                                            <div class="invalid-feedback d-block">{{ form.quantity_on_hand.errors }}</div>
-                                        {% endif %}
-                                    </div>
-                                {% endif %}
-
-
-                                <div class="col-md-2 text-end">
-                                     {% if formset.can_delete %}
-                                        {{ form.DELETE }}
-                                        <label for="{{ form.DELETE.id_for_label }}" class="form-check-label">Eliminar</label>
-                                    {% endif %}
-                                </div>
-                                {# Display hidden fields (like ID for existing instances) #}
-                                {% for hidden_field in form.hidden_fields %}
-                                    {{ hidden_field }}
-                                {% endfor %}
-                            </div>
-                        </div>
-                    {% endfor %}
+                    {# The entire formset section is removed #}
+                    {# You might want to add a message here indicating that medication management is done elsewhere, if that's the case #}
+                    <div class="text-center mt-4">
+                        <p class="text-muted">La gestión de medicamentos para este residente se realiza a través de la lista de residentes o la página de dosis.</p>
+                    </div>
 
 
                     <div class="d-flex justify-content-between mt-4">

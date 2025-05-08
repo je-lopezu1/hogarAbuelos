@@ -1,16 +1,16 @@
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, render
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
+from datetime import datetime
 
 from medication_dose.models import MedicationDose
-from medication_dose.forms import MedicationDoseForm, MedicationDoseUpdateForm
+from medication_dose.forms import MedicationDoseForm, MedicationDoseUpdateForm # Keep MedicationDoseForm for use in resident_doses_view
 from residents.models import Resident, ResidentMedication
 import medication_dose.logic.medication_dose_logic as mdl
-from datetime import datetime
 from authentication.models import UserProfile
-from medications.models import Medication # Import Medication
+from medications.models import Medication
 
 
 @login_required
@@ -26,26 +26,14 @@ def resident_doses_view(request, resident_pk):
                  return redirect('dashboard:index')
              elif not user_profile.is_family():
                   messages.error(request, 'Tipo de usuario no autorizado para ver esta página.')
-                  return redirect('dashboard:index') # Redirect other unauthorized types
-
+                  return redirect('dashboard:index')
 
     except UserProfile.DoesNotExist:
         messages.error(request, 'Perfil de usuario no encontrado.')
         return redirect('dashboard:index')
 
-
-    doses = MedicationDose.objects.filter(resident=resident).order_by('-day', '-time')
-    # Get the resident's medication quantities to display
-    resident_medications = ResidentMedication.objects.filter(resident=resident).select_related('medication')
-
-    return render(request, 'resident_doses.html', {'resident': resident, 'doses': doses, 'resident_medications': resident_medications})
-
-@login_required
-def create_medication_dose_view(request, resident_pk):
-    # Access restricted to 'doctor' by middleware (in RoleBasedAccessMiddleware)
-    resident = get_object_or_404(Resident, pk=resident_pk)
-
-    if request.method == 'POST':
+    # Handle the form submission for adding a new dose
+    if request.method == 'POST' and user_profile.is_doctor(): # Only doctors can add doses
         form = MedicationDoseForm(request.POST, resident=resident)
         if form.is_valid():
             medication = form.cleaned_data.get('medication')
@@ -58,48 +46,65 @@ def create_medication_dose_view(request, resident_pk):
                     medication=medication
                 )
                 if resident_medication.quantity_on_hand < quantity_administered:
-                    messages.error(request, f'"{resident.name}" no tiene suficiente "{medication.name}" disponible ({resident_medication.quantity_on_hand}). No se pudo agregar la dosis.')
-                    return render(request, 'create_dose.html', {'resident': resident, 'form': form})
+                    messages.error(request, f'"{resident.name}" no tiene suficiente "{medication.name}" ({resident_medication.quantity_on_hand}). No se pudo agregar la dosis.')
+                    # Proceed to render the page with the form and errors
+                else:
+                    day = datetime.today().date()
+                    time = datetime.today().time()
+
+                    medication_dose_data = {
+                        'resident': resident,
+                        'medication': medication,
+                        'dose': form.cleaned_data.get('dose'),
+                        'quantity_administered': quantity_administered,
+                        'day': day,
+                        'time': time,
+                    }
+
+                    try:
+                        with transaction.atomic():
+                            # Deduct quantity BEFORE creating the dose within the transaction
+                            resident_medication.quantity_on_hand -= quantity_administered
+                            resident_medication.save()
+
+                            # Create the dose
+                            mdl.create_medication_dose(medication_dose_data)
+
+                            messages.success(request, 'Dosis agregada correctamente.')
+                            # Redirect to the same page to clear the form and show updated data
+                            return redirect('medication_dose:resident_doses_view', resident_pk=resident.pk)
+
+                    except Exception as e:
+                        messages.error(request, f'Error al guardar la dosis: {e}')
+                        # The atomic block will roll back if an error occurs
+                        # Proceed to render the page with the form and errors
+
 
             except ResidentMedication.DoesNotExist:
                  messages.error(request, f'"{resident.name}" no tiene "{medication.name}" asignado o no se encontró el registro de cantidad.')
-                 return render(request, 'create_dose.html', {'resident': resident, 'form': form})
-
-
-            day = datetime.today().date()
-            time = datetime.today().time()
-
-            medication_dose_data = {
-                'resident': resident,
-                'medication': medication,
-                'dose': form.cleaned_data.get('dose'),
-                'quantity_administered': quantity_administered,
-                'day': day,
-                'time': time,
-            }
-
-            try:
-                with transaction.atomic():
-                     # Deduct quantity BEFORE creating the dose within the transaction
-                    resident_medication.quantity_on_hand -= quantity_administered
-                    resident_medication.save()
-
-                    # Create the dose
-                    mdl.create_medication_dose(medication_dose_data) # This logic function will no longer update ResidentMedication quantity itself
-
-                    messages.success(request, 'Dosis agregada correctamente.')
-                    return redirect('medication_dose:resident_doses_view', resident_pk=resident.pk)
-
-            except Exception as e:
-                messages.error(request, f'Error al guardar la dosis: {e}')
-                # The atomic block will roll back if an error occurs
+                 # Proceed to render the page with the form and errors
 
         else:
              messages.error(request, 'Error al agregar la dosis. Por favor, verifica los campos.')
-    else:
-        form = MedicationDoseForm(resident=resident)
+             # Proceed to render the page with the form and errors
 
-    return render(request, 'create_dose.html', {'resident': resident, 'form': form})
+    else: # GET request or non-doctor POST
+        form = MedicationDoseForm(resident=resident) # Initialize an empty form
+
+    # Fetch doses and resident medications for rendering the page
+    doses = MedicationDose.objects.filter(resident=resident).order_by('-day', '-time')
+    resident_medications = ResidentMedication.objects.filter(resident=resident).select_related('medication')
+
+    context = {
+        'resident': resident,
+        'doses': doses,
+        'resident_medications': resident_medications,
+        'form': form, # Pass the form to the template
+    }
+
+    return render(request, 'resident_doses.html', context)
+
+# The create_medication_dose_view is removed as its logic is now in resident_doses_view
 
 @login_required
 def delete_medication_dose_view(request, resident_pk, dose_pk):

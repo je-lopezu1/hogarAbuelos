@@ -111,7 +111,7 @@
                     <i class="fas fa-pills"></i>
                 </div>
                 <div class="stat-value">{{ top_medications_data|length }}</div>
-                <div class="stat-title">Medicamentos principales (Asignados)</div> {# Clarified label #}
+                <div class="stat-title">Medicamentos principales (Asignados)</div>
             </div>
         </div>
 
@@ -154,9 +154,9 @@
                                 <a href="{% url 'medication_dose:resident_doses_view' resident.pk %}" class="btn btn-sm btn-primary" title="Ver Dosis">
                                     <i class="fas fa-eye me-1"></i>Ver Dosis
                                 </a>
-                                <!-- Button to Add Dose (Only for Doctors) -->
+                                <!-- Button to Add Dose (Only for Doctors) - Now links to the resident doses page -->
                                 {% if user.is_authenticated and user.profile.is_doctor %}
-                                <a href="{% url 'medication_dose:create_medication_dose_view' resident.pk %}" class="btn btn-sm btn-success" title="Agregar Dosis">
+                                <a href="{% url 'medication_dose:resident_doses_view' resident.pk %}" class="btn btn-sm btn-success" title="Agregar Dosis"> {# Changed URL here #}
                                     <i class="fas fa-plus me-1"></i>Agregar Dosis
                                 </a>
                                 {% endif %}
@@ -224,7 +224,7 @@
                 <thead>
                     <tr>
                         <th scope="col">Medicamento</th>
-                        <th scope="col">Residentes Asignados</th> {# Clarified label #}
+                        <th scope="col">Residentes Asignados</th>
                     </tr>
                 </thead>
                 <tbody>
