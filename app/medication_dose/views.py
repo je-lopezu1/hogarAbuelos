@@ -8,7 +8,7 @@ from datetime import datetime
 from medication_dose.models import MedicationDose
 from medication_dose.forms import MedicationDoseForm, MedicationDoseUpdateForm
 from residents.models import Resident, ResidentMedication
-from residents.forms import AddResidentMedicationQuantityForm # Import the new form
+from residents.forms import AddResidentMedicationQuantityForm
 import medication_dose.logic.medication_dose_logic as mdl
 from authentication.models import UserProfile
 from medications.models import Medication
@@ -33,28 +33,90 @@ def resident_doses_view(request, resident_pk):
         messages.error(request, 'Perfil de usuario no encontrado.')
         return redirect('dashboard:index')
 
-    # Initialize forms for display
-    # Medication Dose Form (for Doctors)
+    # Initialize forms for display (GET request or POST with errors)
     medication_dose_form = None
-    if user_profile.is_doctor():
-         medication_dose_form = MedicationDoseForm(resident=resident)
-
-    # Add Quantity Form (for Administrators)
     add_quantity_form = None
-    if user_profile.is_administrator():
-        add_quantity_form = AddResidentMedicationQuantityForm(resident=resident)
+
+    # --- Handle POST requests ---
+    if request.method == 'POST':
+        if user_profile.is_doctor():
+            # Handle Dose Form submission (only if doctor)
+            medication_dose_form = MedicationDoseForm(request.POST, resident=resident)
+            if medication_dose_form.is_valid():
+                medication = medication_dose_form.cleaned_data.get('medication')
+                quantity_administered = medication_dose_form.cleaned_data.get('quantity_administered')
+
+                # Check if the resident has enough of this medication
+                try:
+                    resident_medication = ResidentMedication.objects.select_for_update().get(
+                        resident=resident,
+                        medication=medication
+                    )
+                    if resident_medication.quantity_on_hand < quantity_administered:
+                        messages.error(request, f'"{resident.name}" no tiene suficiente "{medication.name}" ({resident_medication.quantity_on_hand}). No se pudo agregar la dosis.')
+                        # The form and errors will be rendered below
+                    else:
+                        day = datetime.today().date()
+                        time = datetime.today().time()
+
+                        medication_dose_data = {
+                            'resident': resident,
+                            'medication': medication,
+                            'dose': medication_dose_form.cleaned_data.get('dose'),
+                            'quantity_administered': quantity_administered,
+                            'day': day,
+                            'time': time,
+                            'status': 'scheduled', # Default status for new dose
+                        }
+
+                        try:
+                            with transaction.atomic():
+                                # Deduct quantity BEFORE creating the dose within the transaction
+                                resident_medication.quantity_on_hand -= quantity_administered
+                                resident_medication.save()
+
+                                # Create the dose
+                                mdl.create_medication_dose(medication_dose_data)
+
+                                messages.success(request, 'Dosis agregada correctamente.')
+                                # Redirect to the same page to clear the form and show updated data
+                                return redirect('medication_dose:resident_doses_view', resident_pk=resident.pk)
+
+                        except Exception as e:
+                            messages.error(request, f'Error al guardar la dosis: {e}')
+                            # The atomic block will roll back if an error occurs
+                            # The form and errors will be rendered below
 
 
-    # Fetch doses and resident medications for rendering the page
-    doses = MedicationDose.objects.filter(resident=resident).order_by('-day', '-time')
+                except ResidentMedication.DoesNotExist:
+                     messages.error(request, f'"{resident.name}" no tiene "{medication.name}" asignado o no se encontró el registro de cantidad.')
+                     # The form and errors will be rendered below
+
+            # If form is not valid or there's an error, it will fall through to render with the form
+            add_quantity_form = AddResidentMedicationQuantityForm(resident=resident) # Initialize other form
+
+        # Note: The add_resident_medication_quantity_view handles its own POST requests
+        # and redirects. So, if an admin submits the quantity form, this block won't run.
+
+    else: # --- Handle GET requests ---
+        if user_profile.is_doctor():
+            medication_dose_form = MedicationDoseForm(resident=resident)
+        if user_profile.is_administrator():
+            add_quantity_form = AddResidentMedicationQuantityForm(resident=resident)
+
+
+    # Fetch doses - ONLY display doses that are NOT 'deleted'
+    doses = MedicationDose.objects.filter(resident=resident).exclude(status='deleted').order_by('-day', '-time')
+
+    # Fetch resident medications for rendering the quantity info
     resident_medications = ResidentMedication.objects.filter(resident=resident).select_related('medication')
 
     context = {
         'resident': resident,
         'doses': doses,
         'resident_medications': resident_medications,
-        'medication_dose_form': medication_dose_form, # Pass the dose form
-        'add_quantity_form': add_quantity_form, # Pass the add quantity form
+        'medication_dose_form': medication_dose_form,
+        'add_quantity_form': add_quantity_form,
     }
 
     return render(request, 'resident_doses.html', context)
@@ -66,11 +128,10 @@ def add_resident_medication_quantity_view(request, resident_pk):
     # Restricted to Administrator by middleware
     resident = get_object_or_404(Resident, pk=resident_pk)
 
-    # Ensure the user is an Administrator
+    # Ensure the user is an Administrator (redundant with middleware, but good practice)
     if not request.user.is_authenticated or not (hasattr(request.user, 'profile') and request.user.profile.is_administrator()):
          messages.error(request, 'No tienes permiso para realizar esta acción.')
          return redirect('medication_dose:resident_doses_view', resident_pk=resident.pk)
-
 
     if request.method == 'POST':
         form = AddResidentMedicationQuantityForm(request.POST, resident=resident)
@@ -80,7 +141,7 @@ def add_resident_medication_quantity_view(request, resident_pk):
 
             try:
                 with transaction.atomic():
-                    resident_medication = ResidentMedication.objects.select_for_update().get( # Use select_for_update
+                    resident_medication = ResidentMedication.objects.select_for_update().get(
                         resident=resident,
                         medication=medication
                     )
@@ -98,7 +159,7 @@ def add_resident_medication_quantity_view(request, resident_pk):
         else:
              messages.error(request, 'Error al añadir cantidad. Por favor, verifica los campos.')
 
-    # If it's not a POST request (e.g., direct GET access), redirect to the doses page
+    # Redirect back to the doses page in case of GET or errors
     return redirect('medication_dose:resident_doses_view', resident_pk=resident.pk)
 
 
@@ -114,6 +175,7 @@ def delete_medication_dose_view(request, resident_pk, dose_pk):
     if request.method == 'POST':
         try:
              with transaction.atomic():
+                 # Restore resident's medication quantity
                  if dose.medication and dose.quantity_administered is not None:
                      try:
                          resident_medication = ResidentMedication.objects.select_for_update().get(
@@ -122,13 +184,18 @@ def delete_medication_dose_view(request, resident_pk, dose_pk):
                          )
                          resident_medication.quantity_on_hand += dose.quantity_administered
                          resident_medication.save()
-                         messages.success(request, 'Dosis eliminada y cantidad restaurada correctamente.')
+                         messages.success(request, 'Cantidad restaurada al inventario del residente.')
                      except ResidentMedication.DoesNotExist:
-                         messages.warning(request, f'ResidentMedication not found for {dose.resident.name} and {dose.medication_name}. Dose deleted, but quantity not restored.')
+                         messages.warning(request, f'ResidentMedication not found for {dose.resident.name} and {dose.medication_name}. Quantity not restored.')
                  else:
-                     messages.warning(request, 'Dosis eliminada, but could not restore quantity (medication or quantity missing).')
+                     messages.warning(request, 'Could not restore quantity (medication or quantity missing).')
 
-                 dose.delete()
+                 # Mark the dose as 'deleted' instead of physical deletion
+                 dose.status = 'deleted'
+                 dose.save()
+
+                 messages.success(request, 'Dosis marcada como eliminada (historial conservado).')
+
 
              return redirect('medication_dose:resident_doses_view', resident_pk=resident_pk)
 
@@ -148,6 +215,12 @@ def update_medication_dose_view(request, resident_pk, dose_pk):
         messages.error(request, 'La dosis no corresponde al residente seleccionado.')
         return redirect('medication_dose:resident_doses_view', resident_pk=resident.pk)
 
+    # Prevent updating doses that are not in 'scheduled' status
+    if dose.status != 'scheduled':
+        messages.warning(request, 'Solo se pueden editar dosis programadas.')
+        return redirect('medication_dose:resident_doses_view', resident_pk=resident.pk)
+
+
     if request.method == 'POST':
         form = MedicationDoseUpdateForm(request.POST, instance=dose, resident=resident)
         if form.is_valid():
@@ -166,7 +239,7 @@ def update_medication_dose_view(request, resident_pk, dose_pk):
 
                      if original_medication == new_medication:
                           quantity_needed = new_quantity - original_quantity
-                          if new_resident_medication.quantity_on_hand < quantity_needed:
+                          if resident_medication.quantity_on_hand < quantity_needed:
                               messages.error(request, f'"{resident.name}" no tiene suficiente "{new_medication.name}" ({new_resident_medication.quantity_on_hand}) para esta actualización ({quantity_needed} adicionales necesarios).')
                               return render(request, 'update_dose.html', {'form': form, 'dose': dose, 'resident': resident})
                      else:
@@ -192,7 +265,7 @@ def update_medication_dose_view(request, resident_pk, dose_pk):
                          new_resident_medication.quantity_on_hand -= new_quantity
                          new_resident_medication.save()
 
-                     form.save()
+                     form.save() # Save the dose instance with updated fields
                      messages.success(request, 'Dosis actualizada correctamente.')
                      return redirect('medication_dose:resident_doses_view', resident_pk=resident.pk)
 

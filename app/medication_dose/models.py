@@ -1,5 +1,5 @@
 from django.db import models
-from residents.models import Resident, ResidentMedication # Import ResidentMedication
+from residents.models import Resident, ResidentMedication
 from medications.models import Medication
 
 class MedicationDose(models.Model):
@@ -22,47 +22,29 @@ class MedicationDose(models.Model):
     day = models.DateField()
     time = models.TimeField()
 
+    # New field to track dose status
+    STATUS_CHOICES = [
+        ('scheduled', 'Programada'),
+        ('taken', 'Tomada'),
+        ('skipped', 'Omitida'),
+        ('deleted', 'Eliminada'), # Use 'deleted' to represent the logical deletion
+    ]
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='scheduled')
+
     def save(self, *args, **kwargs):
         # Set medication_name if medication is present
         if self.medication:
             self.medication_name = self.medication.name
 
-            # Decrease resident's medication quantity when a NEW dose is saved
-            # This logic is more robustly handled in the view with transactions and checks,
-            # but keeping a basic version here as a safeguard if saving directly.
-            if self._state.adding:
-                try:
-                    resident_medication = ResidentMedication.objects.get(
-                        resident=self.resident,
-                        medication=self.medication
-                    )
-                    if resident_medication.quantity_on_hand >= self.quantity_administered:
-                        resident_medication.quantity_on_hand -= self.quantity_administered
-                        resident_medication.save()
-                    else:
-                        # This case should ideally be prevented by view validation
-                        print(f"Warning: Insufficient quantity for {self.resident.name}'s {self.medication.name}. Dose saved, but quantity might be negative.")
-                except ResidentMedication.DoesNotExist:
-                    print(f"Warning: ResidentMedication not found for {self.resident.name} and {self.medication.name}. Dose saved, but quantity not updated.")
-
+        # Quantity deduction logic is handled in the view on creation.
+        # Quantity restoration logic is handled in the view on "deletion" (status change).
 
         super().save(*args, **kwargs)
 
-    def delete(self, *args, **kwargs):
-         # Restore resident's medication quantity when a dose is deleted
-         if self.medication and self.quantity_administered is not None: # Ensure medication and quantity are available
-             try:
-                 resident_medication = ResidentMedication.objects.get(
-                     resident=self.resident,
-                     medication=self.medication
-                 )
-                 resident_medication.quantity_on_hand += self.quantity_administered
-                 resident_medication.save()
-                 print(f"Quantity restored for {self.resident.name}'s {self.medication.name} on dose deletion.")
-             except ResidentMedication.DoesNotExist:
-                 print(f"Warning: ResidentMedication not found for {self.resident.name} and {self.medication.name}. Dose deleted but quantity not restored.")
-
-         super().delete(*args, **kwargs)
+    # Removed the delete method as we are not doing physical deletion
+    # def delete(self, *args, **kwargs):
+    #      # ... quantity restoration logic removed ...
+    #      super().delete(*args, **kwargs)
 
 
     def __str__(self):
