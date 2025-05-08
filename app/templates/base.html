@@ -9,58 +9,61 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap">
     <style>
+        /* Estilos generales */
         :root {
-            --primary-green: #5BA85A;
-            --secondary-green: #438940;
-            --light-green: #E1F5E1;
-            --accent-green: #8BC34A;
+            --primary-blue: #1A73E8; /* Primary Blue (Google Blue) */
+            --secondary-blue: #155EEA; /* A slightly darker blue */
+            --light-blue: #E8F0FE; /* Light Blue */
+            --accent-blue: #4285F4; /* Accent Blue */
             --text-dark: #333333;
             --text-light: #FFFFFF;
-            --accent-warm: #FFB74D;
-            --accent-soft: #FFE0B2;
-            --accent-blue: #64B5F6;
+            --accent-warm: #F9AB00; /* Warm Yellow/Orange */
+            --accent-soft: #FEEFC3; /* Soft Yellow/Orange */
+            --accent-green: #34A853; /* Green accent for success/positive */
+            --accent-red: #EA4335; /* Red accent for danger/error */
         }
-        
+
         body {
             font-family: 'Quicksand', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--light-green);
+            background-color: var(--light-blue); /* Use light blue background */
             color: var(--text-dark);
             font-size: 16px;
             line-height: 1.6;
-            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200" opacity="0.07"><path d="M20,50 Q30,20 50,30 Q70,40 70,60 Q70,80 50,90 Q30,100 20,70 Z" fill="%235BA85A"/><circle cx="150" cy="50" r="20" fill="%23FFB74D"/><path d="M150,120 Q170,100 190,120 Q210,140 190,160 Q170,180 150,160 Q130,140 150,120 Z" fill="%2364B5F6"/><path d="M60,150 Q80,130 100,140 Q120,150 110,170 Q100,190 80,180 Q60,170 60,150 Z" fill="%23FFE0B2"/></svg>');
+            /* Update background image pattern to use blue tones */
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200" opacity="0.07"><path d="M20,50 Q30,20 50,30 Q70,40 70,60 Q70,80 50,90 Q30,100 20,70 Z" fill="%231A73E8"/><circle cx="150" cy="50" r="20" fill="%23F9AB00"/><path d="M150,120 Q170,100 190,120 Q210,140 190,160 Q170,180 150,160 Q130,140 150,120 Z" fill="%2334A853"/><path d="M60,150 Q80,130 100,140 Q120,150 110,170 Q100,190 80,180 Q60,170 60,150 Z" fill="%23FEEFC3"/></svg>');
             background-repeat: repeat;
             background-attachment: fixed;
         }
-        
+
         .navbar {
-            background-color: var(--primary-green);
-            border-bottom: 4px solid var(--accent-warm);
+            background-color: var(--primary-blue); /* Use primary blue */
+            border-bottom: 4px solid var(--accent-warm); /* Keep warm accent for contrast */
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             font-size: 1.1rem;
         }
-        
+
         .navbar-brand, .nav-link {
             color: var(--text-light);
         }
-        
+
         .navbar-brand {
             font-size: 1.4rem;
             font-weight: 700;
         }
-        
+
         .nav-link {
             margin: 0 5px;
             border-radius: 20px;
             padding: 8px 16px !important;
             transition: all 0.3s;
         }
-        
+
         .nav-link:hover {
-            background-color: var(--accent-warm);
+            background-color: var(--accent-warm); /* Hover with warm accent */
             color: var(--text-dark) !important;
             transform: translateY(-3px);
         }
-        
+
         .feature-card {
             padding: 30px;
             margin-bottom: 30px;
@@ -71,12 +74,12 @@
             background-color: white;
             border: 2px solid var(--accent-soft);
         }
-        
+
         .feature-card:hover {
             transform: translateY(-5px);
             border-color: var(--accent-warm);
         }
-        
+
         .btn {
             font-size: 1.1rem;
             border-radius: 50px;
@@ -86,80 +89,81 @@
             transition: all 0.3s;
             padding: 10px 24px;
         }
-        
+
+        /* Update button colors to blue tones */
         .btn-primary {
-            background-color: var(--accent-blue);
-            border-color: var(--accent-blue);
+            background-color: var(--primary-blue);
+            border-color: var(--primary-blue);
         }
-        
+
         .btn-primary:hover {
-            background-color: #2196F3;
-            border-color: #2196F3;
+            background-color: var(--secondary-blue);
+            border-color: var(--secondary-blue);
             transform: translateY(-3px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
         }
-        
+
         .btn-secondary {
             background-color: #9E9E9E;
             border-color: #9E9E9E;
         }
-        
+
         .btn-secondary:hover {
             background-color: #757575;
             border-color: #757575;
             transform: translateY(-3px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
         }
-        
+
         .btn-success {
-            background-color: var(--primary-green);
-            border-color: var(--primary-green);
+            background-color: var(--accent-green); /* Use green for success */
+            border-color: var(--accent-green);
         }
-        
+
         .btn-success:hover {
-            background-color: var(--secondary-green);
-            border-color: var(--secondary-green);
+            background-color: #28a745; /* Bootstrap success darker */
+            border-color: #28a745;
             transform: translateY(-3px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
         }
-        
+
         .btn-danger {
-            background-color: #F44336;
-            border-color: #F44336;
+            background-color: var(--accent-red); /* Use red for danger */
+            border-color: var(--accent-red);
         }
-        
+
         .btn-danger:hover {
-            background-color: #D32F2F;
-            border-color: #D32F2F;
+            background-color: #c82333; /* Bootstrap danger darker */
+            border-color: #c82333;
             transform: translateY(-3px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
         }
-        
+
         .btn-info {
-            background-color: var(--accent-blue);
+            background-color: var(--accent-blue); /* Use accent blue for info */
             border-color: var(--accent-blue);
             color: white;
         }
-        
+
         .btn-info:hover {
-            background-color: #2196F3;
-            border-color: #2196F3;
+            background-color: #007bff; /* Bootstrap info darker */
+            border-color: #007bff;
             transform: translateY(-3px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
             color: white;
         }
-        
+
         .btn-sm {
             padding: 7px 15px;
             font-size: 0.95rem;
         }
-        
+
         .btn i {
             font-size: 1rem;
         }
-        
+
         .page-header {
-            background-color: var(--primary-green);
+            background-color: var(--primary-blue); /* Use primary blue */
             color: var(--text-light);
             padding: 2.5rem 0;
             margin-bottom: 2.5rem;
@@ -168,7 +172,7 @@
             position: relative;
             overflow: hidden;
         }
-        
+
         .page-header::before {
             content: "";
             position: absolute;
@@ -176,27 +180,28 @@
             left: 0;
             right: 0;
             bottom: 0;
+             /* Update background image pattern */
             background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100" opacity="0.1"><circle cx="20" cy="20" r="15" fill="white"/><circle cx="80" cy="80" r="15" fill="white"/><circle cx="80" cy="20" r="10" fill="white"/><circle cx="20" cy="80" r="10" fill="white"/></svg>');
             background-repeat: repeat;
             opacity: 0.2;
         }
-        
+
         .page-header h2 {
             font-size: 2.2rem;
             font-weight: 700;
             position: relative;
             z-index: 1;
         }
-        
+
         .content-card {
             background-color: white;
             border-radius: 20px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
             padding: 2.5rem;
             margin-bottom: 2.5rem;
-            border: 2px solid var(--accent-soft);
+            border: 2px solid var(--accent-soft); /* Use soft accent border */
         }
-        
+
         .list-group-item {
             border-left: 0;
             border-right: 0;
@@ -204,135 +209,144 @@
             padding: 15px 20px;
             font-size: 1.1rem;
         }
-        
+
         .list-group-item:hover {
-            background-color: var(--light-green);
+            background-color: var(--light-blue); /* Use light blue on hover */
         }
-        
+
         .form-control {
             border-radius: 15px;
             padding: 12px 20px;
             border: 2px solid #dee2e6;
             font-size: 1.1rem;
         }
-        
+
         .form-control:focus {
-            border-color: var(--primary-green);
-            box-shadow: 0 0 0 0.25rem rgba(76, 175, 80, 0.25);
+            border-color: var(--primary-blue); /* Focus with primary blue */
+            box-shadow: 0 0 0 0.25rem rgba(26, 115, 232, 0.25); /* Blue shadow */
         }
-        
+
         .form-label {
             font-size: 1.1rem;
             margin-bottom: 0.5rem;
         }
-        
+
         .table {
             border-radius: 15px;
             overflow: hidden;
             font-size: 1.1rem;
         }
-        
+
         .table thead th {
-            background-color: var(--primary-green);
+            background-color: var(--primary-blue); /* Table header with primary blue */
             color: var(--text-light);
             font-weight: 600;
             border: none;
             padding: 15px;
         }
-        
+
         .table tbody td {
             padding: 15px;
             vertical-align: middle;
         }
-        
+
         .footer {
-            background-color: var(--primary-green);
+            background-color: var(--primary-blue); /* Footer with primary blue */
             color: var(--text-light);
             padding: 30px 0;
             margin-top: 60px;
-            border-top: 4px solid var(--accent-warm);
+            border-top: 4px solid var(--accent-warm); /* Keep warm accent border */
             text-align: center;
             font-size: 1.1rem;
         }
-        
+
         /* Decorative elements */
         .decorative-icon {
             position: absolute;
             opacity: 0.1;
             z-index: 0;
         }
-        
+
         .decorative-leaf-1 {
             top: 20px;
             left: 5%;
             transform: rotate(-20deg);
             font-size: 3rem;
-            color: var(--accent-warm);
+            color: var(--accent-warm); /* Keep warm accent */
         }
-        
+
         .decorative-leaf-2 {
             bottom: 20px;
             right: 5%;
             transform: rotate(20deg);
             font-size: 3rem;
-            color: var(--accent-soft);
+            color: var(--accent-soft); /* Keep soft accent */
         }
-        
+
         /* Accessibility improvements */
         a, button, input, select, textarea {
             transition: all 0.2s;
         }
-        
+
         a:focus, button:focus, input:focus, select:focus, textarea:focus {
-            outline: 3px solid var(--accent-warm);
+            outline: 3px solid var(--accent-warm); /* Keep warm accent outline for focus */
             outline-offset: 3px;
         }
-        
+
         /* Larger text and icons for better visibility */
         h1 { font-size: 2.5rem; }
         h2 { font-size: 2.2rem; }
         h3 { font-size: 1.8rem; }
         h4 { font-size: 1.5rem; }
         h5 { font-size: 1.3rem; }
-        
+
         .fa, .fas, .far, .fal, .fab {
             font-size: 1.2em;
         }
-        
+
         /* Estilos para el menú de usuario */
         .user-profile {
             display: flex;
             align-items: center;
         }
-        
+
         .user-profile img {
             width: 40px;
             height: 40px;
             border-radius: 50%;
             margin-right: 10px;
         }
-        
+
         .dropdown-menu {
             border-radius: 15px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
             border: none;
             padding: 10px;
         }
-        
+
         .dropdown-item {
             border-radius: 10px;
             padding: 10px 15px;
             transition: all 0.2s;
         }
-        
+
         .dropdown-item:hover {
-            background-color: var(--light-green);
+            background-color: var(--light-blue); /* Use light blue on hover */
         }
-        
+
         .dropdown-item i {
             margin-right: 10px;
-            color: var(--primary-green);
+            color: var(--primary-blue); /* Use primary blue for icons */
         }
+
+        /* Update specific styles in other templates if necessary */
+        /* For example, in dashboard templates, you might need to adjust border colors */
+        /* .stat-card { border-left: 4px solid var(--accent-blue); } */
+        /* .alert-card { border-left: 4px solid var(--accent-warm); } */
+        /* .panel-title { color: var(--primary-blue); border-bottom: 2px solid var(--light-blue); } */
+        /* .medication-card { border-left: 4px solid var(--accent-green); } */
+
+
     </style>
     {% block extra_css %}{% endblock %}
 </head>
@@ -362,7 +376,7 @@
                             </a>
                         </li>
                     {% endif %}
-                        
+
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'dashboard:index' %}">
                             <i class="fas fa-tachometer-alt me-2"></i>Panel
@@ -388,7 +402,7 @@
                         </li>
                     {% endif %}
                 </ul>
-                
+
                 <ul class="navbar-nav">
                     {% if user.is_authenticated %}
                     <li class="nav-item dropdown">
@@ -427,7 +441,7 @@
         <div class="container">
             <div class="text-center">
                 <p><i class="fas fa-heart me-2"></i> Cuidando con amor desde 2010 <i class="fas fa-heart ms-2"></i></p>
-                <p>&copy; 2025 Hogar Gerontológico New Hope. Todos los derechos reservados.</p>
+                <p>© 2025 Hogar Gerontológico New Hope. Todos los derechos reservados.</p>
             </div>
         </div>
     </footer>
