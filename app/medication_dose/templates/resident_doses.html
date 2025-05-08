@@ -3,6 +3,30 @@
 
 {% block title %}Dosis de Medicación - {{ resident.name }}{% endblock %}
 
+{% block extra_css %}
+<style>
+    .medication-quantity-info {
+        background-color: #e9ecef;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border: 1px solid #ced4da;
+    }
+    .medication-quantity-item {
+        margin-bottom: 8px;
+        font-size: 1.1rem;
+    }
+    .low-stock {
+        color: #ffc107; /* Warning yellow */
+        font-weight: bold;
+    }
+     .no-stock {
+        color: #dc3545; /* Danger red */
+        font-weight: bold;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="page-header">
     <div class="container">
@@ -26,15 +50,42 @@
             </div>
         </div>
 
-        <div class="col-12">
-            <div class="content-card">
+         <div class="col-md-4">
+            <div class="content-card medication-quantity-info h-100">
+                <h4 class="mb-3">
+                     <i class="fas fa-boxes me-2"></i>Cantidades Disponibles
+                </h4>
+                {% if resident_medications %}
+                    {% for res_med in resident_medications %}
+                        <div class="medication-quantity-item">
+                            <i class="fas fa-capsules me-2 text-success"></i>
+                            {{ res_med.medication.name }}:
+                            <span class="fw-bold
+                                {% if res_med.quantity_on_hand <= 0 %}no-stock{% elif res_med.quantity_on_hand < 10 %}low-stock{% endif %}">
+                                {{ res_med.quantity_on_hand }}
+                            </span>
+                             {% if res_med.quantity_on_hand <= 0 %}
+                                <i class="fas fa-exclamation-circle text-danger ms-1" title="Sin inventario"></i>
+                            {% elif res_med.quantity_on_hand < 10 %}
+                                <i class="fas fa-exclamation-triangle text-warning ms-1" title="Bajo inventario"></i>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="text-muted">No hay medicamentos asignados a este residente.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="content-card h-100">
                 <div class="table-responsive">
                     <table class="table table-striped table-hover">
                         <thead>
                             <tr class="bg-success text-white">
                                 <th>Medicamento</th>
-                                <th>Dosis (Texto)</th> {# Updated label #}
-                                <th>Cantidad</th> {# New column #}
+                                <th>Dosis (Texto)</th>
+                                <th>Cantidad Admin.</th>
                                 <th>Día</th>
                                 <th>Hora</th>
                                 {# Only show Actions column for Doctors #}
@@ -48,7 +99,7 @@
                             <tr>
                                 <td>{{ dose.medication_name }}</td>
                                 <td>{{ dose.dose }}</td>
-                                <td>{{ dose.quantity_administered }}</td> {# Display quantity #}
+                                <td>{{ dose.quantity_administered }}</td>
                                 <td>{{ dose.day }}</td>
                                 <td>{{ dose.time }}</td>
                                 {# Only show actions for Doctors #}
@@ -61,7 +112,7 @@
                                         </a>
                                         <!-- Delete Button (only for Doctors) -->
                                         <form method="post" action="{% url 'medication_dose:delete_medication_dose_view' resident.pk dose.pk %}"
-                                            onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta dosis?');" class="d-inline">
+                                            onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta dosis? Esto restaurará la cantidad administrada.');" class="d-inline">
                                             {% csrf_token %}
                                             <button type="submit" class="btn btn-danger btn-sm" title="Eliminar">
                                                 <i class="fas fa-trash"></i> Eliminar
@@ -74,7 +125,7 @@
                             {% empty %}
                             <tr>
                                 {# Adjust colspan based on whether Actions column is shown #}
-                                <td colspan="{% if user.is_authenticated and user.profile.is_doctor %}6{% else %}5{% endif %}" class="text-center text-muted py-4"> {# Increased colspan by 1 #}
+                                <td colspan="{% if user.is_authenticated and user.profile.is_doctor %}6{% else %}5{% endif %}" class="text-center text-muted py-4">
                                     <i class="fas fa-info-circle me-2"></i>No hay dosis registradas para este residente.
                                 </td>
                             </tr>

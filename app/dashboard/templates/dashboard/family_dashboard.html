@@ -44,7 +44,7 @@
         margin-bottom: 20px;
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         transition: all 0.3s;
-        border-left: 4px solid var(--primary-green);
+        border-left: 4px solid var(--accent-green); /* Keep green for medication cards */
     }
 
     .medication-card:hover {
@@ -53,7 +53,7 @@
     }
 
     .resident-selector {
-        background-color: var(--light-green);
+        background-color: var(--light-blue); /* Use light blue */
         border-radius: 15px;
         padding: 20px;
         margin-bottom: 30px;
@@ -76,8 +76,8 @@
     }
 
     .resident-card.active {
-        border-color: var(--primary-green);
-        background-color: var(--light-green);
+        border-color: var(--primary-blue); /* Use primary blue when active */
+        background-color: var(--light-blue); /* Use light blue when active */
     }
 
     .recent-item {
@@ -87,7 +87,7 @@
     }
 
     .recent-item:hover {
-        background-color: var(--light-green);
+        background-color: var(--light-blue); /* Use light blue on hover */
     }
 
     .recent-item:last-child {
@@ -97,10 +97,19 @@
     .panel-title {
         font-size: 1.3rem;
         font-weight: 600;
-        color: var(--primary-green);
+        color: var(--primary-blue); /* Use primary blue for titles */
         margin-bottom: 20px;
         padding-bottom: 10px;
-        border-bottom: 2px solid var(--light-green);
+        border-bottom: 2px solid var(--light-blue); /* Use light blue for border */
+    }
+
+    .low-stock {
+        color: #ffc107; /* Warning yellow */
+        font-weight: bold;
+    }
+     .no-stock {
+        color: #dc3545; /* Danger red */
+        font-weight: bold;
     }
 </style>
 {% endblock %}
@@ -131,7 +140,7 @@
                 <a href="?resident_id={{ resident.id }}" class="text-decoration-none">
                     <div class="resident-card {% if resident.id == selected_resident.id %}active{% endif %}">
                         <h5 class="mb-1">
-                            <i class="fas fa-user me-2 {% if resident.id == selected_resident.id %}text-success{% else %}text-primary{% endif %}"></i>
+                            <i class="fas fa-user me-2 {% if resident.id == selected_resident.id %}text-primary{% else %}text-muted{% endif %}"></i> {# Use primary blue for active, muted for others #}
                             {{ resident.name }}
                         </h5>
                         <p class="text-muted mb-0"><i class="fas fa-calendar-alt me-1"></i>{{ resident.age }} años</p>
@@ -172,7 +181,7 @@
                 <div class="bg-light p-3 rounded-circle d-inline-block mb-3">
                     <i class="fas fa-user-circle fa-6x text-primary"></i>
                 </div>
-                <a href="{% url 'medication_dose:resident_doses_view' selected_resident.pk %}" class="btn btn-primary mt-3"> {# Corrected URL #}
+                <a href="{% url 'medication_dose:resident_doses_view' selected_resident.pk %}" class="btn btn-primary mt-3">
                     <i class="fas fa-eye me-2"></i>Ver Dosis Completas
                 </a>
             </div>
@@ -186,7 +195,7 @@
                 <div class="stat-icon">
                     <i class="fas fa-pills"></i>
                 </div>
-                <div class="stat-value">{{ medications.count }}</div>
+                <div class="stat-value">{{ resident_medications.count }}</div> {# Use resident_medications count #}
                 <div class="stat-title">Medicamentos actuales</div>
             </div>
         </div>
@@ -207,22 +216,29 @@
         <div class="col-lg-6 mb-4">
             <div class="content-card h-100">
                 <h3 class="panel-title">
-                    <i class="fas fa-prescription-bottle-alt me-2"></i>Medicamentos
-                </h3>
+                    <i class="fas fa-prescription-bottle-alt me-2"></i>Medicamentos Asignados
+                </h3> {# Clarified label #}
 
-                {% if medications %}
+                {% if resident_medications %}
                 <div class="medications-list">
-                    {% for medication in medications %}
+                    {% for res_med in resident_medications %} {# Loop through ResidentMedication objects #}
                     <div class="medication-card">
                         <h5>
-                            <i class="fas fa-capsules me-2 text-success"></i>{{ medication.name }}
+                            <i class="fas fa-capsules me-2 text-success"></i>{{ res_med.medication.name }}
                         </h5>
-                         {% if medication.inventory %} {# Display inventory if available #}
                          <p class="mb-1">
                             <i class="fas fa-boxes me-2 text-muted"></i>
-                            <strong>Inventario:</strong> <span class="{% if medication.inventory.quantity < 20 %}low-stock{% endif %}">{{ medication.inventory.quantity }}</span>
+                            <strong>Cantidad en mano:</strong>
+                             <span class="fw-bold
+                                {% if res_med.quantity_on_hand <= 0 %}no-stock{% elif res_med.quantity_on_hand < 10 %}low-stock{% endif %}">
+                                {{ res_med.quantity_on_hand }}
+                            </span>
+                             {% if res_med.quantity_on_hand <= 0 %}
+                                <i class="fas fa-exclamation-circle text-danger ms-1" title="Sin inventario"></i>
+                            {% elif res_med.quantity_on_hand < 10 %}
+                                <i class="fas fa-exclamation-triangle text-warning ms-1" title="Bajo inventario"></i>
+                            {% endif %}
                          </p>
-                         {% endif %}
                     </div>
                     {% endfor %}
                 </div>
@@ -249,7 +265,7 @@
                             <div>
                                 <h5 class="mb-1">{{ dose.medication_name }}</h5>
                                 <p class="text-muted mb-0">
-                                    <i class="fas fa-syringe me-1"></i>Dosis: {{ dose.dose }} (<span class="fw-bold">{{ dose.quantity_administered }}</span>) {# Display quantity #}
+                                    <i class="fas fa-syringe me-1"></i>Dosis: {{ dose.dose }} (<span class="fw-bold">{{ dose.quantity_administered }}</span>)
                                 </p>
                             </div>
                             <span class="badge bg-success rounded-pill">{{ dose.day|date:"d/m/Y" }} {{ dose.time }}</span>

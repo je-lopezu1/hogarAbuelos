@@ -5,7 +5,7 @@
     <div class="card">
         <div class="card-header">
             <h3>Editar Dosis de Medicamento</h3>
-            <p class="text-muted">Residente: {{ resident.name }}</p> {# Changed from full_name #}
+            <p class="text-muted">Residente: {{ resident.name }}</p>
         </div>
         <div class="card-body">
             {% if messages %}
@@ -21,7 +21,6 @@
 
                 <div class="form-group mb-3">
                     <label for="{{ form.medication.id_for_label }}">{{ form.medication.label }}</label>
-                    {{ form.medication }}
                     {% if form.medication.errors %}
                     <div class="text-danger">
                         {% for error in form.medication.errors %}
@@ -29,11 +28,11 @@
                         {% endfor %}
                     </div>
                     {% endif %}
+                    {{ form.medication }}
                 </div>
 
                 <div class="form-group mb-3">
                     <label for="{{ form.dose.id_for_label }}">{{ form.dose.label }}</label>
-                    {{ form.dose }}
                     {% if form.dose.errors %}
                     <div class="text-danger">
                         {% for error in form.dose.errors %}
@@ -41,11 +40,11 @@
                         {% endfor %}
                     </div>
                     {% endif %}
+                    {{ form.dose }}
                 </div>
 
-                <div class="form-group mb-3"> {# New field for quantity #}
+                <div class="form-group mb-3">
                     <label for="{{ form.quantity_administered.id_for_label }}">{{ form.quantity_administered.label }}</label>
-                    {{ form.quantity_administered }}
                     {% if form.quantity_administered.errors %}
                     <div class="text-danger">
                         {% for error in form.quantity_administered.errors %}
@@ -53,12 +52,13 @@
                         {% endfor %}
                     </div>
                     {% endif %}
+                    {{ form.quantity_administered }}
                 </div>
 
 
                 <div class="form-group">
                     <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                    <a href="{% url 'medication_dose:resident_doses_view' resident.pk %}" class="btn btn-secondary">Cancelar</a> {# Corrected URL name #}
+                    <a href="{% url 'medication_dose:resident_doses_view' resident.pk %}" class="btn btn-secondary">Cancelar</a>
                 </div>
             </form>
         </div>

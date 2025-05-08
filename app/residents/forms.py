@@ -1,12 +1,14 @@
 from django import forms
 
 from medications.models import Medication
-from .models import Resident
+from .models import Resident, ResidentMedication # Import ResidentMedication
 
 class ResidentForm(forms.ModelForm):
+    # Keep the ManyToManyField for selecting medications, but quantity is handled separately
     medications = forms.ModelMultipleChoiceField(
         queryset=Medication.objects.all(),
-        widget=forms.CheckboxSelectMultiple,  # Usa checkboxes en lugar de select multiple
+        widget=forms.CheckboxSelectMultiple,
+        required=False # Make it optional if a resident might not have medications initially
     )
     class Meta:
         model = Resident
@@ -15,5 +17,21 @@ class ResidentForm(forms.ModelForm):
             'name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre del residente'}),
             'age': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Edad del residente'}),
             'medical_condition': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Condición médica del residente'}),
-            'medications': forms.SelectMultiple(attrs={'class': 'form-control'})
-        }  
+            # medications widget is defined above
+        }
+
+# New form for managing resident medication quantities
+class ResidentMedicationForm(forms.ModelForm):
+    # medication is included in the formset fields, no need to define it here
+    class Meta:
+        model = ResidentMedication
+        fields = ['quantity_on_hand']
+        widgets = {
+            'quantity_on_hand': forms.NumberInput(attrs={'class': 'form-control', 'min': '0'})
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Display medication name next to the quantity field for clarity in the formset
+        if self.instance and self.instance.medication:
+            self.fields['quantity_on_hand'].label = f"{self.instance.medication.name} Cantidad:"

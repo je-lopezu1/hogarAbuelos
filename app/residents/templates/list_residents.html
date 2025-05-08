@@ -40,10 +40,19 @@
                             <div class="col-md-3">
                                 <strong><i class="fas fa-pills me-2 text-success"></i>Medicamentos:</strong>
 
-                                {% if resident.medications.all %}
+                                {% if resident.residentmedication_set.all %} {# Access the reverse relationship #}
                                 <ul class="list-unstyled mt-1">
-                                    {% for medication in resident.medications.all %}
-                                    <li><i class="fas fa-prescription-bottle-alt me-1 text-primary"></i> {{ medication.name }}</li>
+                                    {% for res_med in resident.residentmedication_set.all %} {# Loop through ResidentMedication instances #}
+                                    <li>
+                                        <i class="fas fa-prescription-bottle-alt me-1 text-primary"></i>
+                                        {{ res_med.medication.name }}: <span class="fw-bold {% if res_med.quantity_on_hand < 10 and res_med.quantity_on_hand > 0 %}low-stock{% elif res_med.quantity_on_hand <= 0 %}no-stock{% endif %}">{{ res_med.quantity_on_hand }}</span>
+                                        {% if res_med.quantity_on_hand < 10 and res_med.quantity_on_hand > 0 %}
+                                            <i class="fas fa-exclamation-triangle text-warning ms-1" title="Bajo inventario"></i>
+                                        {% endif %}
+                                        {% if res_med.quantity_on_hand <= 0 %}
+                                            <i class="fas fa-times-circle text-danger ms-1" title="Sin inventario"></i>
+                                        {% endif %}
+                                    </li>
                                     {% endfor %}
                                 </ul>
                                 {% else %}
@@ -67,7 +76,7 @@
                                 {% endif %}
 
                                 <!-- View Doses button (Available to Doctor, Admin, and Family via middleware) -->
-                                <a href="{% url 'residents:resident_doses_view' resident.pk %}" class="btn btn-info btn-sm" title="Ver Dosis">
+                                <a href="{% url 'medication_dose:resident_doses_view' resident.pk %}" class="btn btn-info btn-sm" title="Ver Dosis">
                                     <i class="fas fa-eye me-1"></i> Ver Dosis
                                 </a>
                             </div>
@@ -86,4 +95,15 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .low-stock {
+        color: #ffc107; /* Warning yellow */
+    }
+     .no-stock {
+        color: #dc3545; /* Danger red */
+    }
+</style>
 {% endblock %}

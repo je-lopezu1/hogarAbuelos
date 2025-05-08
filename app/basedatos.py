@@ -6,15 +6,13 @@ from datetime import datetime, timedelta
 from django.utils import timezone
 
 # 1. Configurar entorno de Django
-# Cambia 'hogarAbuelos.settings' a la ruta de tu archivo settings.py
-# Note: Your project is named 'app', so the settings module is 'app.settings'
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'app.settings')
 django.setup()
 
 # 2. Importar modelos después de configurar Django
 from django.contrib.auth.models import User
-from residents.models import Resident
-from medications.models import Medication, MedicationInventory # Import MedicationInventory
+from residents.models import Resident, ResidentMedication # Import ResidentMedication
+from medications.models import Medication # MedicationInventory is removed
 from medication_dose.models import MedicationDose
 from authentication.models import UserProfile
 from dashboard.models import DashboardPreference
@@ -55,9 +53,11 @@ def clean_database():
         print("Eliminando perfiles de usuario...")
         UserProfile.objects.all().delete()
 
-        # Delete MedicationInventory before Medications
-        print("Eliminando inventario de medicamentos...")
-        MedicationInventory.objects.all().delete()
+        # Delete ResidentMedication before Residents and Medications
+        print("Eliminando relaciones Resident-Medicamento...")
+        ResidentMedication.objects.all().delete()
+
+        # MedicationInventory is removed, so no need to delete it here.
 
         print("Eliminando medicamentos...")
         Medication.objects.all().delete()
@@ -84,9 +84,9 @@ def clean_database():
         return False
 
 # -------------------------------------------------------------------
-# Función para crear medicamentos de muestra y su inventario
+# Función para crear medicamentos de muestra
 # -------------------------------------------------------------------
-def create_medications_and_inventory():
+def create_medications():
     medications = [
         'Paracetamol', 'Ibuprofeno', 'Aspirina', 'Omeprazol', 'Lorazepam',
         'Diazepam', 'Metformina', 'Enalapril', 'Losartan', 'Atorvastatina',
@@ -94,7 +94,7 @@ def create_medications_and_inventory():
         'Esomeprazol', 'Amlodipino', 'Lisinopril', 'Metoprolol', 'Warfarina'
     ]
 
-    print("\n=== CREANDO MEDICAMENTOS E INVENTARIO ===")
+    print("\n=== CREANDO MEDICAMENTOS ===")
     created_medications = []
 
     for med_name in medications:
@@ -104,20 +104,6 @@ def create_medications_and_inventory():
             print(f"  ✓ Creado medicamento: {med_name}")
         else:
             print(f"  ⚠ Medicamento ya existe: {med_name}")
-
-        # Create or update inventory for the medication
-        inventory, created = MedicationInventory.objects.get_or_create(
-            medication=medication,
-            defaults={'quantity': random.randint(50, 200)} # Initial random quantity
-        )
-        if created:
-            print(f"    ✓ Creado inventario para {med_name} con {inventory.quantity} unidades")
-        else:
-             # Update quantity if inventory already exists
-             inventory.quantity = random.randint(50, 200) # Reset quantity for consistency
-             inventory.save()
-             print(f"    ⚠ Inventario ya existe para {med_name}, actualizado a {inventory.quantity} unidades")
-
 
     return created_medications
 
@@ -171,26 +157,33 @@ def create_residents():
     return created_residents
 
 # -------------------------------------------------------------------
-# Función para asignar medicamentos aleatorios a los residentes
+# Función para asignar medicamentos aleatorios a los residentes WITH QUANTITY
 # -------------------------------------------------------------------
-def assign_medications(residents, medications):
-    print("\n=== ASIGNANDO MEDICAMENTOS A RESIDENTES ===")
+def assign_medications_with_quantity(residents, medications):
+    print("\n=== ASIGNANDO MEDICAMENTOS A RESIDENTES CON CANTIDAD INICIAL ===")
 
     for resident in residents:
-        # Clear existing medications to avoid duplicates
-        resident.medications.clear()
+        # Clear existing ResidentMedication relationships
+        ResidentMedication.objects.filter(resident=resident).delete()
 
         # Assign between 1 and 5 random medications
         num_meds = random.randint(1, 5)
-        # Ensure num_meds doesn't exceed the total number of medications
         num_meds = min(num_meds, len(medications))
         selected_meds = random.sample(medications, num_meds)
 
+        assigned_meds_list = []
         for med in selected_meds:
-            resident.medications.add(med)
+            initial_quantity = random.randint(20, 100) # Assign an initial quantity
+            ResidentMedication.objects.create(
+                resident=resident,
+                medication=med,
+                quantity_on_hand=initial_quantity
+            )
+            assigned_meds_list.append(f"{med.name} ({initial_quantity})")
 
-        meds_list = ", ".join([med.name for med in selected_meds])
-        print(f"  ✓ {resident.name} recibe {num_meds} medicamentos: {meds_list}")
+
+        meds_str = ", ".join(assigned_meds_list)
+        print(f"  ✓ {resident.name} recibe {num_meds} medicamentos: {meds_str}")
 
     return residents
 
@@ -221,14 +214,12 @@ def create_users_and_profiles(residents):
             }
         )
 
-        # If created, set the password
         if created:
             user.set_password(DEFAULT_PASSWORD)
             user.save()
             print(f"  ✓ Creado usuario doctor: {username}")
         else:
             print(f"  ⚠ Usuario doctor ya existe: {username}")
-            # Update password to ensure consistency in tests
             user.set_password(DEFAULT_PASSWORD)
             user.save()
 
@@ -246,7 +237,6 @@ def create_users_and_profiles(residents):
             print(f"  ✓ Creado perfil para: {username} (doctor)")
         else:
             print(f"  ⚠ Perfil ya existe para: {username}")
-            # Ensure the user_type is correct if profile already exists
             profile.user_type = 'doctor'
             profile.specialty = profile.specialty or random.choice(['Geriatría', 'Cardiología', 'Neurología', 'Medicina Interna', 'Psiquiatría'])
             profile.save()
@@ -281,7 +271,7 @@ def create_users_and_profiles(residents):
             user=user,
             defaults={
                 'user_type': 'administrator',
-                'resident': None # Admins are not typically linked to a single resident like old patients were
+                'resident': None
             }
         )
 
@@ -290,7 +280,7 @@ def create_users_and_profiles(residents):
         else:
              print(f"  ⚠ Perfil ya existe para: {username}")
              profile.user_type = 'administrator'
-             profile.resident = None # Ensure no old patient link persists
+             profile.resident = None
              profile.save()
 
 
@@ -331,7 +321,6 @@ def create_users_and_profiles(residents):
             print(f"  ✓ Creado perfil para: {username} (family)")
         else:
             print(f"  ⚠ Perfil ya existe para: {username}")
-            # Ensure the user_type is correct if profile already exists
             profile.user_type = 'family'
             profile.relationship = profile.relationship or random.choice(['Hijo/a', 'Sobrino/a', 'Nieto/a', 'Hermano/a'])
             profile.save()
@@ -340,7 +329,6 @@ def create_users_and_profiles(residents):
         # Assign random residents (between 1 and 2)
         profile.related_residents.clear() # Clear existing relations before adding new ones
         num_relatives = random.randint(1, 2)
-        # Ensure num_relatives doesn't exceed the total number of residents
         num_relatives = min(num_relatives, len(residents))
 
         assigned_relatives = random.sample(residents, num_relatives)
@@ -359,74 +347,76 @@ def create_users_and_profiles(residents):
 def create_medication_doses(residents):
     print("\n=== CREANDO DOSIS DE MEDICAMENTOS ===")
 
-    # Generar fechas para los últimos 30 días
     end_date = timezone.now().date()
     start_date = end_date - timedelta(days=30)
-
-    # Tiempos comunes para tomar medicamentos
     times = ['08:00', '12:00', '16:00', '20:00']
 
     total_doses = 0
 
+    # Fetch all ResidentMedication objects once for efficiency
+    all_resident_meds = ResidentMedication.objects.select_related('medication').all()
+
     for resident in residents:
-        medications = resident.medications.all()
-        if not medications:
+        # Get medications assigned to the resident with their current quantities (simulated)
+        resident_medications = [rm for rm in all_resident_meds if rm.resident == resident]
+        resident_med_quantity_map = {rm.medication.id: rm.quantity_on_hand for rm in resident_medications}
+
+
+        if not resident_medications:
             continue
 
         print(f"  Generando dosis para: {resident.name}")
         resident_doses = 0
 
-        # For each medication of the resident
-        for medication in medications:
-            # Determine how many times a day the medication is taken (1 to 3)
+        # Sort medications by ID for consistent simulation
+        resident_medications_sorted = sorted(resident_medications, key=lambda x: x.medication.id)
+
+        for res_med in resident_medications_sorted:
+            medication = res_med.medication
+            current_quantity = resident_med_quantity_map.get(medication.id, 0) # Get simulated quantity
+
             times_per_day = random.randint(1, 3)
-            # Ensure times_per_day doesn't exceed the available times
             medication_times_list = random.sample(times, min(times_per_day, len(times)))
 
-            # Generate doses for some random days
-            num_days = random.randint(10, 25)  # Days with records
+            num_days = random.randint(10, 25)
             total_days_range = (end_date - start_date).days
-            # Ensure num_days doesn't exceed the total date range
             num_days = min(num_days, total_days_range)
 
             if total_days_range > 0:
                  random_day_offsets = random.sample(range(total_days_range), num_days)
             else:
-                 random_day_offsets = [] # Handle case where date range is 0
+                 random_day_offsets = []
 
             for day_offset in random_day_offsets:
                 current_date = start_date + timedelta(days=day_offset)
 
                 for time_str in medication_times_list:
-                    # Create dose text, example: "1 tableta"
                     dose_text = f"{random.randint(1, 3)} {random.choice(['tabletas', 'cápsulas', 'ml'])}"
-                    # Random quantity administered
-                    quantity_admin = random.randint(1, 5)
+                    quantity_admin = random.randint(1, 2) # Smaller quantity for simulation
 
+                    # Check if the resident has enough quantity before creating a dose (simulated)
+                    if current_quantity >= quantity_admin:
+                         MedicationDose.objects.create(
+                            resident=resident,
+                            medication=medication,
+                            dose=dose_text,
+                            quantity_administered=quantity_admin,
+                            day=current_date,
+                            time=time_str,
+                            medication_name=medication.name
+                        )
+                         current_quantity -= quantity_admin # Update local simulated quantity
+                         # Update the actual ResidentMedication object's quantity
+                         res_med_obj = next((rm for rm in resident_medications if rm.medication == medication), None)
+                         if res_med_obj:
+                             res_med_obj.quantity_on_hand -= quantity_admin
+                             res_med_obj.save()
 
-                    # Check if there's enough inventory BEFORE creating
-                    try:
-                        inventory = medication.inventory
-                        if inventory.quantity >= quantity_admin:
-                             MedicationDose.objects.create(
-                                resident=resident,
-                                medication=medication,
-                                dose=dose_text,
-                                quantity_administered=quantity_admin, # Include quantity
-                                day=current_date,
-                                time=time_str,
-                                medication_name=medication.name # This will be overwritten by model save, but good practice
-                            )
-
-                             total_doses += 1
-                             resident_doses += 1
-                        else:
-                             # Optionally print a message if inventory is low
-                             print(f"    ⊗ Inventario bajo para {medication.name}. No se creó la dosis para {resident.name} en {current_date} {time_str}")
-
-                    except MedicationInventory.DoesNotExist:
-                         print(f"    ⊗ Inventario no encontrado para {medication.name}. No se creó la dosis para {resident.name} en {current_date} {time_str}")
-
+                         total_doses += 1
+                         resident_doses += 1
+                    else:
+                        # print(f"    ⊗ Cantidad baja para {medication.name} de {resident.name}. No se creó la dosis en {current_date} {time_str}. Cantidad restante: {current_quantity}")
+                        break # Stop adding doses for this medication if quantity is depleted in simulation
 
         print(f"    ✓ {resident_doses} dosis creadas para {resident.name}")
 
@@ -468,32 +458,31 @@ def populate_db():
     print("   SCRIPT DE GENERACIÓN DE DATOS FICTICIOS")
     print("============================================")
 
-    # Ask if database should be cleaned
     should_clean = input("¿Deseas limpiar la base de datos antes de poblarla? (s/n): ")
     if should_clean.lower() == 's':
         if not clean_database():
             return
 
-    # 1. Create medications and their inventory
-    medications = create_medications_and_inventory()
+    # 1. Create medications
+    medications = create_medications()
 
     # 2. Create residents
     residents = create_residents()
 
-    # 3. Assign medications to residents
-    assign_medications(residents, medications)
+    # 3. Assign medications to residents with initial quantity
+    assign_medications_with_quantity(residents, medications)
 
     # 4. Create users and profiles
     created_users = create_users_and_profiles(residents)
 
-    # 5. Create medication dose history (this will now impact inventory)
+    # 5. Create medication dose history (this will now impact resident quantity)
     create_medication_doses(residents)
 
     # 6. Print final summary
     print("\n=== RESUMEN DE DATOS CREADOS ===")
     print(f"✓ Medicamentos: {Medication.objects.count()}")
-    print(f"✓ Inventario de Medicamentos: {MedicationInventory.objects.count()}")
     print(f"✓ Residentes: {Resident.objects.count()}")
+    print(f"✓ Relaciones Resident-Medicamento: {ResidentMedication.objects.count()}")
     print(f"✓ Usuarios: {User.objects.count()}")
     print(f"✓ Dosis de medicamentos: {MedicationDose.objects.count()}")
 

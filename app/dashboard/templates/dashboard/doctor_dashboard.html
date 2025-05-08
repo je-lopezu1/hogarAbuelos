@@ -12,7 +12,7 @@
         box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         transition: all 0.3s;
         height: 100%;
-        border-left: 4px solid var(--accent-green);
+        border-left: 4px solid var(--accent-blue); /* Use accent blue border */
     }
 
     .stat-card:hover {
@@ -22,7 +22,7 @@
 
     .stat-card .stat-icon {
         font-size: 2.5rem;
-        color: var(--primary-green);
+        color: var(--primary-blue); /* Use primary blue icon color */
         margin-bottom: 15px;
     }
 
@@ -49,7 +49,7 @@
     }
 
     .recent-item:hover {
-        background-color: var(--light-green);
+        background-color: var(--light-blue); /* Use light blue on hover */
     }
 
     .recent-item:last-child {
@@ -59,10 +59,10 @@
     .panel-title {
         font-size: 1.3rem;
         font-weight: 600;
-        color: var(--primary-green);
+        color: var(--primary-blue); /* Use primary blue for titles */
         margin-bottom: 20px;
         padding-bottom: 10px;
-        border-bottom: 2px solid var(--light-green);
+        border-bottom: 2px solid var(--light-blue); /* Use light blue for border */
     }
 
      .action-buttons a, .action-buttons button {
@@ -70,7 +70,11 @@
      }
 
      .low-stock {
-        color: #D32F2F; /* Red */
+        color: #ffc107; /* Warning yellow */
+        font-weight: bold;
+    }
+     .no-stock {
+        color: #dc3545; /* Danger red */
         font-weight: bold;
     }
 </style>
@@ -106,8 +110,8 @@
                 <div class="stat-icon">
                     <i class="fas fa-pills"></i>
                 </div>
-                <div class="stat-value">{{ top_medications_data|length }}</div> {# Use the annotated data #}
-                <div class="stat-title">Medicamentos principales</div>
+                <div class="stat-value">{{ top_medications_data|length }}</div>
+                <div class="stat-title">Medicamentos principales (Asignados)</div> {# Clarified label #}
             </div>
         </div>
 
@@ -208,36 +212,28 @@
     </div>
     <!-- End of row for Residents List and Recent Doses -->
 
-    <!-- Medicamentos principales -->
+    <!-- Most Common Medications -->
     <div class="content-card mb-4">
         <h3 class="panel-title">
             <i class="fas fa-pills me-2"></i>Medicamentos Más Comunes
         </h3>
 
-        {% if top_medications_data %} {# Use the annotated data #}
+        {% if top_medications_data %}
         <div class="table-responsive">
             <table class="table table-hover">
                 <thead>
                     <tr>
                         <th scope="col">Medicamento</th>
-                        <th scope="col">Residentes</th>
-                         <th scope="col">Inventario</th>
+                        <th scope="col">Residentes Asignados</th> {# Clarified label #}
                     </tr>
                 </thead>
                 <tbody>
-                    {% for medication in top_medications_data %} {# Loop directly over medication objects #}
+                    {% for medication in top_medications_data %}
                     <tr>
                         <td>
                             <i class="fas fa-prescription-bottle-alt me-2 text-success"></i>{{ medication.name }}
                         </td>
-                        <td>{{ medication.resident_count }}</td> {# Access the annotated count #}
-                         <td>
-                            {% if medication.inventory %}
-                                <span class="{% if medication.inventory.quantity < 20 %}low-stock{% endif %}">{{ medication.inventory.quantity }}</span>
-                            {% else %}
-                                N/A
-                            {% endif %}
-                         </td>
+                        <td>{{ medication.resident_count }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>

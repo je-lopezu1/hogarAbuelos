@@ -2,6 +2,20 @@
 
 {% block title %}Crear Nuevo Residente{% endblock %}
 
+{% block extra_css %}
+<style>
+    .medication-quantity-field {
+        display: none; /* Hidden by default */
+        margin-left: 10px; /* Adjusted spacing */
+        width: 80px; /* Adjusted width */
+        padding: .25rem .5rem; /* Smaller padding */
+        font-size: .875rem; /* Smaller font size */
+        line-height: 1.5;
+        border-radius: .2rem;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="page-header">
     <div class="container">
@@ -19,33 +33,75 @@
                     <strong>¡Ups!</strong> Hay algunos errores en el formulario.
                 </div>
                 {% endif %}
+                 {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+
 
                 <form method="POST">
                     {% csrf_token %}
-                    
+
                     {% for field in form %}
+                        {% if field.name != 'medications' %} {# Render other fields normally #}
+                            <div class="mb-3">
+                                <label for="{{ field.id_for_label }}" class="form-label fw-bold">{{ field.label }}</label>
+                                {% if field.errors %}
+                                <div class="invalid-feedback d-block">{{ field.errors }}</div>
+                                {% endif %}
+                                <input type="{{ field.field.widget.input_type }}"
+                                      name="{{ field.name }}"
+                                      id="{{ field.id_for_label }}"
+                                      class="form-control {% if field.errors %}is-invalid{% endif %}"
+                                      value="{{ field.value|default:'' }}"
+                                      {% if field.field.required %}required{% endif %}>
+                                {% if field.help_text %}
+                                <div class="form-text">{{ field.help_text }}</div>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+
+                    {# Manually render medications with quantity input #}
                     <div class="mb-3">
-                        <label for="{{ field.id_for_label }}" class="form-label fw-bold">{{ field.label }}</label>
-                        {{ field.errors }}
-                        {% if field.name == 'medications' %}
-                            {{ field }}
-                            {% if field.help_text %}
-                            <div class="form-text">{{ field.help_text }}</div>
-                            {% endif %}
-                        {% else %}
-                            <input type="{{ field.field.widget.input_type }}" 
-                                  name="{{ field.name }}" 
-                                  id="{{ field.id_for_label }}" 
-                                  class="form-control {% if field.errors %}is-invalid{% endif %}"
-                                  value="{{ field.value|default:'' }}"
-                                  {% if field.field.required %}required{% endif %}>
-                            {% if field.help_text %}
-                            <div class="form-text">{{ field.help_text }}</div>
-                            {% endif %}
+                        <label class="form-label fw-bold">Medicamentos Asignados:</label>
+                        {% if form.medications.errors %}
+                            <div class="alert alert-danger mt-2">{{ form.medications.errors }}</div>
+                        {% endif %}
+                        <ul class="list-unstyled">
+                            {% for medication in all_medications %}
+                            <li>
+                                <div class="form-check d-flex align-items-center">
+                                    <input type="checkbox"
+                                           name="{{ form.medications.name }}"
+                                           value="{{ medication.pk }}"
+                                           class="form-check-input medication-checkbox"
+                                           id="{{ form.medications.id_for_label }}_{{ forloop.counter0 }}">
+                                    <label class="form-check-label me-2" for="{{ form.medications.id_for_label }}_{{ forloop.counter0 }}">
+                                        {{ medication.name }}
+                                    </label>
+                                     {# Input for initial quantity, initially hidden #}
+                                    <input type="number"
+                                           name="initial_quantity_{{ medication.pk }}"
+                                           class="form-control medication-quantity-field form-control-sm"
+                                           placeholder="Cant."
+                                           min="0"
+                                           value="0"> {# Set a default value of 0 #}
+                                    <span class="form-text ms-1">unidad(es)</span>
+                                </div>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        {% if form.medications.help_text %}
+                        <div class="form-text">{{ form.medications.help_text }}</div>
                         {% endif %}
                     </div>
-                    {% endfor %}
-                    
+
+
                     <div class="d-flex justify-content-between mt-4">
                         <a href="{% url 'residents:residents_view' %}" class="btn btn-secondary">
                             <i class="fas fa-arrow-left me-2"></i>Cancelar
@@ -59,4 +115,34 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkboxes = document.querySelectorAll('.medication-checkbox');
+
+        checkboxes.forEach(checkbox => {
+            const quantityField = document.querySelector(`input[name="initial_quantity_${checkbox.value}"]`);
+
+            // Function to toggle quantity field visibility and required attribute
+            const toggleQuantityField = () => {
+                if (checkbox.checked) {
+                    quantityField.style.display = 'inline-block';
+                    quantityField.setAttribute('required', 'required');
+                } else {
+                    quantityField.style.display = 'none';
+                    quantityField.removeAttribute('required');
+                    quantityField.value = '0'; // Reset value to 0 when unchecked
+                }
+            };
+
+            // Initial state on page load (handle cases where form reloads with errors)
+            toggleQuantityField();
+
+            // Add event listener for changes
+            checkbox.addEventListener('change', toggleQuantityField);
+        });
+    });
+</script>
 {% endblock %}
