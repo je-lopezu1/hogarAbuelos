@@ -59,6 +59,30 @@
                                 <span class="text-muted">No tiene medicamentos asignados</span>
                                 {% endif %}
                             </div>
+
+                            <div class="col-md-3">
+                                <strong><i class="fas fa-pills me-2 text-success"></i>Insumos:</strong>
+
+                                {% if resident.residentsupply_set.all %} {# Access the reverse relationship #}
+                                <ul class="list-unstyled mt-1">
+                                    {% for res_sup in resident.residentsupply_set.all %} {# Loop through ResidentMedication instances #}
+                                    <li>
+                                        <i class="fas fa-prescription-bottle-alt me-1 text-primary"></i>
+                                        {{ res_sup.supply.name }}: <span class="fw-bold {% if res_sup.quantity_on_hand < 10 and res_sup.quantity_on_hand > 0 %}low-stock{% elif res_sup.quantity_on_hand <= 0 %}no-stock{% endif %}">{{ res_sup.quantity_on_hand }}</span>
+                                        {% if res_sup.quantity_on_hand < 10 and res_sup.quantity_on_hand > 0 %}
+                                            <i class="fas fa-exclamation-triangle text-warning ms-1" title="Bajo inventario"></i>
+                                        {% endif %}
+                                        {% if res_sup.quantity_on_hand <= 0 %}
+                                            <i class="fas fa-times-circle text-danger ms-1" title="Sin inventario"></i>
+                                        {% endif %}
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                                {% else %}
+                                <span class="text-muted">No tiene insumos asignados</span>
+                                {% endif %}
+                            </div>
+
                             <div class="col-12 mt-3 d-flex justify-content-end">
                                 {# Show Edit and Delete buttons only for Administrators #}
                                 {% if user.is_authenticated and user.profile.is_administrator %}
@@ -79,6 +103,11 @@
                                 <a href="{% url 'medication_dose:resident_doses_view' resident.pk %}" class="btn btn-info btn-sm" title="Ver Dosis">
                                     <i class="fas fa-eye me-1"></i> Ver Dosis
                                 </a>
+                                <!-- View supplies-->
+                                <a href="{% url 'residents:resident_supplies_view' resident.pk %}" class="btn btn-info btn-sm" title="Ver Insumos">
+                                    <i class="fas fa-eye me-1"></i> Ver Insumos
+                                </a>
+
                             </div>
                         </div>
                     </li>

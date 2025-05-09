@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% load auth_extras %} {# Load your custom template tags #}
+
+{% block title %}Insumos - {{ resident.name }}{% endblock %}
+
+
+{% block content %}
+<div class="container">
+    <h2 class="text-center">Insumos de {{ resident.name }}</h2>
+
+    <div class="row mt-4">
+        <div class="col-12 mb-4">
+            <a href="{% url 'residents:residents_view' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left me-2"></i>Volver a la lista de residentes
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Tabla de insumos -->
+        <div class="col-md-8">
+            <div class="content-card h-100">
+                <h3 class="panel-title">
+                    <i class="fas fa-history me-2"></i>Insumos
+                </h3>
+                <div class="table-responsive">
+                    {% if supplies %}
+                    <table class="table table-striped table-hover">
+                        <thead>
+                            <tr class="bg-primary text-white">
+                                <th>Insumo</th>
+                                <th>Cantidad Admin.</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for supply in supplies %}
+                            <tr>
+                                <td>{{ supply.name }}</td>
+                                <td>{{ supply.quantity }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="2" class="text-center text-muted py-4">
+                                    <i class="fas fa-info-circle me-2"></i>No hay insumos registrados para este residente.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Formulario para sumar/restar insumos -->
+        {% if supplies %}
+        <div class="col-md-4">
+            <div class="content-card mb-4">
+                <h5 class="mb-3"><i class="fas fa-plus-circle me-2"></i>Agregar Cantidad</h5>
+                <form method="post" action="{% url 'supplies:add_resident_supply_quantity_view' resident.pk %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="supply-add" class="form-label">Insumo</label>
+                        <select name="supply_id" id="supply-add" class="form-select">
+                            {% for supply in supplies %}
+                                <option value="{{ supply.id }}">{{ supply.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="quantity-add" class="form-label">Cantidad a Agregar</label>
+                        <input type="number" class="form-control" id="quantity-add" name="quantity" min="1" required>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100">Agregar</button>
+                </form>
+            </div>
+
+            <div class="content-card">
+                <h5 class="mb-3"><i class="fas fa-minus-circle me-2"></i>Restar Cantidad</h5>
+                <form method="post" action="{% url 'supplies:add_resident_supply_quantity_view' resident.pk %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="supply-subtract" class="form-label">Insumo</label>
+                        <select name="supply_id" id="supply-subtract" class="form-select">
+                            {% for supply in supplies %}
+                                <option value="{{ supply.id }}">{{ supply.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="quantity-subtract" class="form-label">Cantidad a Restar</label>
+                        <input type="number" class="form-control" id="quantity-subtract" name="quantity" min="1" required>
+                    </div>
+                    <button type="submit" class="btn btn-danger w-100">Restar</button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

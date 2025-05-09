@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'medication_dose',
     'authentication',
     'dashboard',
+    'supplies',
 ]
 
 MIDDLEWARE = [

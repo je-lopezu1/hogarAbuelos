@@ -34,7 +34,7 @@
 
                     {# Main Resident Form #}
                     {% for field in form %}
-                        {% if field.name != 'medications' %} {# Exclude the medications field completely #}
+                        {% if field.name != 'medications' and field.name != 'supplies' %} {# Exclude the medications field completely #}
                             <div class="mb-3">
                                 <label for="{{ field.id_for_label }}" class="form-label fw-bold">{{ field.label }}</label>
                                 {% if field.errors %}

@@ -7,17 +7,19 @@ from django.db import transaction
 from django import forms
 
 from .forms import ResidentForm, ResidentMedicationForm
-from residents.models import Resident, ResidentMedication
+from residents.models import Resident, ResidentMedication, ResidentSupply
 from residents.logic import residents_logic as rl
 from authentication.models import UserProfile
 from medication_dose.views import resident_doses_view as medication_dose_resident_doses_view
 from medications.models import Medication
+from supplies.models import Supply
 
 @login_required
 def residents_view(request):
     # This view is accessible to 'doctor', 'administrator' via middleware
     residents = rl.get_all_residents()
     residents = residents.prefetch_related('residentmedication_set__medication')
+    residents = residents.prefetch_related('residentsupply_set__supply')
     return render(request, 'list_residents.html', {'residents': residents})
 
 @login_required # This decorator is needed
@@ -29,8 +31,11 @@ def create_resident_view(request):
     if request.method == 'POST':
         form = ResidentForm(request.POST)
         selected_medication_ids = request.POST.getlist('medications')
+        selected_supply_ids = request.POST.getlist('supplies')
         initial_quantities = {}
+        initial_quantities2 = {}
         quantity_errors = False
+        quantity_errors2 = False
         for med_id in selected_medication_ids:
              quantity_str = request.POST.get(f'initial_quantity_{med_id}', '0')
              try:
@@ -42,14 +47,33 @@ def create_resident_view(request):
              except ValueError:
                   messages.error(request, f"La cantidad inicial para el medicamento con ID {med_id} no es un número válido.")
                   quantity_errors = True
+        
+        for supply_id in selected_supply_ids:
+                quantity_str2 = request.POST.get(f'initial_quantity_{supply_id}', '0')
+                try:
+                    quantity2 = int(quantity_str2)
+                    if quantity2 < 0:
+                        messages.error(request, f"La cantidad inicial para el insumo con ID {supply_id} no puede ser negativa.")
+                        quantity_errors2 = True
+                    initial_quantities2[int(supply_id)] = quantity2
+                except ValueError:
+                    messages.error(request, f"La cantidad inicial para el insumo con ID {supply_id} no es un número válido.")
+                    quantity_errors2 = True
 
         if quantity_errors:
             form = ResidentForm(request.POST)
             all_medications = Medication.objects.all()
-            return render(request, 'create_resident.html', {'form': form, 'all_medications': all_medications})
+            all_supplies = Supply.objects.all()
+            return render(request, 'create_resident.html', {'form': form, 'all_medications': all_medications, 'all_supplies': all_supplies})
+        
+        if quantity_errors2:
+            form = ResidentForm(request.POST)
+            all_medications = Medication.objects.all()
+            all_supplies = Supply.objects.all()
+            return render(request, 'create_resident.html', {'form': form, 'all_medications': all_medications, 'all_supplies': all_supplies})
 
 
-        if form.is_valid() and not quantity_errors:
+        if form.is_valid() and not quantity_errors and not quantity_errors2:
             try:
                 with transaction.atomic():
                     resident = form.save(commit=False)
@@ -62,27 +86,38 @@ def create_resident_view(request):
                              medication=medication,
                              quantity_on_hand=quantity
                          )
+                    
+                    for sup_id, quantity2 in initial_quantities2.items():
+                         supply = get_object_or_404(Supply, pk=sup_id)
+                         ResidentSupply.objects.create(
+                             resident=resident,
+                             supply=supply,
+                             quantity_on_hand=quantity2
+                         )
 
-                    messages.success(request, f'Residente "{resident.name}" creado correctamente con medicamentos asignados.')
+                    messages.success(request, f'Residente "{resident.name}" creado correctamente con medicamentos e insumos asignados.')
                     return redirect('residents:residents_view')
 
             except Exception as e:
-                messages.error(request, f'Error al crear el residente o asignar medicamentos: {e}')
+                messages.error(request, f'Error al crear el residente o asignar medicamentos/insumos: {e}')
                 all_medications = Medication.objects.all()
-                return render(request, 'create_resident.html', {'form': form, 'all_medications': all_medications})
+                all_supplies = Supply.objects.all()
+                return render(request, 'create_resident.html', {'form': form, 'all_medications': all_medications, 'all_supplies': all_supplies})
 
         else:
-             messages.error(request, 'Error al crear el residente. Por favor, verifica los campos.')
-             all_medications = Medication.objects.all()
-             return render(request, 'create_resident.html', {'form': form, 'all_medications': all_medications})
+            messages.error(request, 'Error al crear el residente. Por favor, verifica los campos.')
+            all_medications = Medication.objects.all()
+            all_supplies = Supply.objects.all()
+            return render(request, 'create_resident.html', {'form': form, 'all_medications': all_medications, 'all_supplies': all_supplies})
 
 
     else:
         form = ResidentForm()
 
     all_medications = Medication.objects.all()
+    all_supplies = Supply.objects.all()
 
-    return render(request, 'create_resident.html', {'form': form, 'all_medications': all_medications})
+    return render(request, 'create_resident.html', {'form': form, 'all_medications': all_medications, 'all_supplies': all_supplies})
 
 
 @login_required
@@ -144,3 +179,9 @@ def update_resident_view(request, pk):
 
 # Use the resident_doses_view from the medication_dose app
 resident_doses_view = medication_dose_resident_doses_view
+
+def resident_supplies_view(request, resident_pk):
+    # This view is accessible to 'doctor', 'administrator' via middleware
+    resident = get_object_or_404(Resident, pk=resident_pk)
+    supplies = rl.get_all_resident_supplies(resident)
+    return render(request, 'resident_supplies.html', {'resident': resident, 'supplies': supplies})

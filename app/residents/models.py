@@ -1,5 +1,6 @@
 from django.db import models
 from medications.models import Medication # Import Medication
+from supplies.models import Supply # Import Supply
 
 class Resident(models.Model):
     name = models.CharField(max_length=100)
@@ -9,6 +10,11 @@ class Resident(models.Model):
     medications = models.ManyToManyField(
         Medication,
         through='ResidentMedication',
+        related_name='residents_with_quantity' # Changed related_name
+    )
+    supplies = models.ManyToManyField(
+        Supply,
+        through='ResidentSupply',
         related_name='residents_with_quantity' # Changed related_name
     )
 
@@ -26,3 +32,15 @@ class ResidentMedication(models.Model):
 
     def __str__(self):
         return f"{self.resident.name} - {self.medication.name} ({self.quantity_on_hand})"
+    
+# New intermediary model to sotre de quantity per resident per supply
+class ResidentSupply(models.Model):
+    resident = models.ForeignKey(Resident, on_delete=models.CASCADE)
+    supply = models.ForeignKey(Supply, on_delete=models.CASCADE)
+    quantity_on_hand = models.IntegerField(default=0) # Quantity the resident has
+
+    class Meta:
+        unique_together = ('resident', 'supply') # A resident can only have one entry per supply
+
+    def __str__(self):
+        return f"{self.resident.name} - {self.supply.name} ({self.quantity_on_hand})"

@@ -12,6 +12,7 @@ urlpatterns = [
     path('residents/', include('residents.urls', namespace='residents')),
     path('medications/', include('medications.urls', namespace='medications')),
     path('medication_dose/', include('medication_dose.urls', namespace='medication_dose')),
+    path('supplies/', include('supplies.urls', namespace='supplies')),
 ]
 
 if settings.DEBUG:

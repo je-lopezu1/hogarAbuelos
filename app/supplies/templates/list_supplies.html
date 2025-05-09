@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load auth_extras %} {# Load your custom template tags #}
+
+{% block title %}Lista de Insumos{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h2 class="text-center">Lista de Insumos</h2>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-12 mb-4">
+            {# Show "Add Medication" button only for Administrators #}
+            {% if user.is_authenticated and user.profile.is_administrator %}
+            <a href="{% url 'supplies:create_supply_view' %}" class="btn btn-success">
+                <i class="fas fa-plus me-2"></i>Añadir Nuevo Insumo
+            </a>
+            {% endif %}
+        </div>
+
+        <div class="col-md-8 mx-auto">
+            <div class="content-card">
+                <ul class="list-group list-group-flush">
+                    {% for supply in supplies %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center py-3">
+                        <span class="fw-bold">
+                            <i class="fas fa-pills me-2 text-success"></i>
+                            {{ supply.name }}
+                        </span>
+                        <div>
+                            {# Show Edit and Delete buttons only for Administrators #}
+                            {% if user.is_authenticated and user.profile.is_administrator %}
+                            <!-- Edit Button -->
+                            <a href="{% url 'supplies:update_supply_view' supply.pk %}" class="btn btn-primary btn-sm me-2" title="Editar">
+                                <i class="fas fa-edit"></i>
+                            </a>
+
+                            <!-- Delete Button -->
+                            <form action="{% url 'supplies:delete_supply_view' supply.pk %}" method="POST" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm" title="Eliminar"
+                                       onclick="return confirm('¿Estás seguro de que deseas eliminar este medicamento?');">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </li>
+                    {% empty %}
+                    <li class="list-group-item text-center py-4 text-muted">
+                        <i class="fas fa-info-circle me-2"></i>No hay insumos registrados.
+                         {% if user.is_authenticated and user.profile.is_administrator %}
+                            <p class="mt-2">Como administrador, puedes <a href="{% url 'supplies:create_supply_view' %}" class="text-success">agregar uno aquí</a>.</p>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
