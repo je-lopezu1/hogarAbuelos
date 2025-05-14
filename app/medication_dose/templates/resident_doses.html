@@ -210,12 +210,12 @@
                                 <th>Medicamento</th>
                                 <th>Dosis (Texto)</th>
                                 <th>Cantidad Admin.</th>
-                                <th>Día</th>
-                                <th>Hora</th>
-                                <th>Estado</th> {# New column for status #}
+                                <th>Día</th>                               
+                                <th>Hora</th>                                
+                                <!--<th>Estado</th> {# New column for status #}-->
                                 {# Only show Actions column for Doctors for non-deleted doses #}
                                 {% if user.is_authenticated and user.profile.is_doctor %}
-                                <th>Acciones</th>
+                                <!--<th>Acciones</th>-->
                                 {% endif %}
                             </tr>
                         </thead>
@@ -227,16 +227,18 @@
                                 <td>{{ dose.quantity_administered }}</td>
                                 <td>{{ dose.day }}</td>
                                 <td>{{ dose.time }}</td>
-                                <td>{{ dose.get_status_display }}</td> {# Display friendly status #}
+                                {# Display status using get_status_display method #}
+                                {# This assumes you have a method in your model that returns a user-friendly status #}
+                                <!--<td>{{ dose.get_status_display }}</td> {# Display friendly status #}-->
                                 {# Only show actions for Doctors AND if the dose is not deleted #}
                                 {% if user.is_authenticated and user.profile.is_doctor and dose.status != 'deleted' %}
-                                <td>
+                                <!--<td>
                                     <div class="d-flex gap-2">
-                                        <!-- Edit Button (only for Doctors) -->
+                                        
                                         <a href="{% url 'medication_dose:update_medication_dose_view' resident.pk dose.pk %}" class="btn btn-info btn-sm" title="Editar">
                                             <i class="fas fa-edit"></i> Editar
                                         </a>
-                                        <!-- Delete Button (only for Doctors) -->
+                                        
                                         <form method="post" action="{% url 'medication_dose:delete_medication_dose_view' resident.pk dose.pk %}"
                                             onsubmit="return confirm('¿Estás seguro de que deseas marcar esta dosis como eliminada y restaurar la cantidad?');" class="d-inline"> {# Updated confirmation message #}
                                             {% csrf_token %}
@@ -245,7 +247,9 @@
                                             </button>
                                         </form>
                                     </div>
-                                </td>
+                                </td>-->
+                                {% elif user.is_authenticated and user.profile.is_doctor and dose.status == 'deleted' %}
+                                     <td><span class="text-muted">Eliminada</span></td> {# Indicate deleted doses are not editable #}
                                 {% else %}
                                      {# Display a message or empty cell if not a doctor or dose is deleted #}
                                      {% if user.is_authenticated and user.profile.is_doctor %}
